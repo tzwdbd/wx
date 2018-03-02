@@ -3,6 +3,9 @@ package com.github.binarywang.demo.wechat.controller;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
+
+import com.github.binarywang.demo.wechat.bean.User;
+import com.github.binarywang.demo.wechat.service.UserService;
 import com.github.binarywang.demo.wechat.utils.JsonUtils;
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +30,8 @@ public class WxMaUserController {
 
     @Autowired
     private WxMaService wxService;
+    @Autowired
+	private UserService userService;
 
     /**
      * 登陆接口
@@ -36,13 +41,18 @@ public class WxMaUserController {
         if (StringUtils.isBlank(code)) {
             return "empty jscode";
         }
-
+        
+        User users = userService.getUserById(1835l);
+        System.out.println(users.getNick());
         try {
             WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo(code);
             this.logger.info(session.getSessionKey());
             this.logger.info(session.getOpenid());
             this.logger.info(session.getExpiresin().toString());
-            //TODO 可以增加自己的逻辑，关联业务相关数据
+            //保存用户
+//    			User user = new User();
+//    			user.setId(1);
+//    			userService.add(user);
             return JsonUtils.toJson(session);
         } catch (WxErrorException e) {
             this.logger.error(e.getMessage(), e);
