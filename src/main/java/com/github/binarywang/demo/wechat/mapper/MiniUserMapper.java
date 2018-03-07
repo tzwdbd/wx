@@ -11,25 +11,25 @@ import org.apache.ibatis.annotations.SelectKey;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
 
-import com.github.binarywang.demo.wechat.bean.User;
+import com.github.binarywang.demo.wechat.bean.MiniUser;
 import com.github.binarywang.demo.wechat.provider.SqlProvider;
 /**
  * @author liuxf
  */
-public interface UserMapper {
+public interface MiniUserMapper {
 
 	@Select("SELECT * FROM oversea.mini_users WHERE id = #{id}")
-	User getUserById(Long id);
+	MiniUser getUserById(Long id);
 
 	@SelectProvider(type=SqlProvider.class,method="selectUser")  
-	public List<User> getUserList(User user);
+	public List<MiniUser> getUserList(MiniUser user);
 	
 	@Insert("insert into oversea.mini_users(nick_name, status) values(#{nickName}, #{status})")
 	@Options(useGeneratedKeys=true,keyProperty="id")
-	public int add(User user);
+	public int add(MiniUser user);
 
 	@Update("UPDATE oversea.mini_users SET username = #{user.username} , age = #{user.age} WHERE id = #{id}")
-	public int update(@Param("id") Integer id, @Param("user") User user);
+	public int update(@Param("id") Integer id, @Param("user") MiniUser user);
 
 	@Delete("DELETE from oversea.mini_users where id = #{id} ")
 	public int delete(Integer id);

@@ -2,11 +2,11 @@ package com.github.binarywang.demo.wechat.provider;
 
 import org.apache.ibatis.jdbc.SQL;
 
-import com.github.binarywang.demo.wechat.bean.User;
+import com.github.binarywang.demo.wechat.bean.MiniUser;
 
 public class SqlProvider {
 
-	public String selectUser(User user){  
+	public String selectUser(MiniUser user){  
 	       StringBuffer sql = new StringBuffer("select * from oversea.mini_users where 1=1 ");  
 	       if(user.getNickName() != null){  
 	           sql.append(" and nick_name=#{nicName}");  
@@ -16,7 +16,7 @@ public class SqlProvider {
 	       }  
 	       return sql.toString();  
 	}
-	public String select6(final User user){  
+	public String select6(final MiniUser user){  
 	       return new SQL(){{  
 	           SELECT("id,name,email");  
 	           FROM("demo");  
@@ -35,7 +35,7 @@ public class SqlProvider {
 	           WHERE("id=#{id}");  
 	       }}.toString();  
 	    }  
-	public String update2(final User user){  
+	public String update2(final MiniUser user){  
 	       return new SQL(){{  
 	           UPDATE("demo");  
 	        
@@ -50,7 +50,7 @@ public class SqlProvider {
 	       }}.toString();  
 	    } 
 	
-	 public String save3(final User user){  
+	 public String save3(final MiniUser user){  
 	       return new SQL(){{  
 	           INSERT_INTO("demo");  
 	           //多个写法.  

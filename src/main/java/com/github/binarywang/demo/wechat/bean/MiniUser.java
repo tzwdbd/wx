@@ -8,7 +8,7 @@ import lombok.Data;
  * @author liuxf
  */
 @Data
-public class User implements Serializable{
+public class MiniUser implements Serializable{
 	/**
 	 * 
 	 */

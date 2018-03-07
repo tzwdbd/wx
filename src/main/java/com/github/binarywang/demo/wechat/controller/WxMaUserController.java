@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.binarywang.demo.wechat.bean.User;
+import com.github.binarywang.demo.wechat.bean.MiniUser;
 import com.github.binarywang.demo.wechat.exception.ProcessStatusCode;
 import com.github.binarywang.demo.wechat.request.LoginRequest;
 import com.github.binarywang.demo.wechat.request.SystemInfo;
 import com.github.binarywang.demo.wechat.request.WechatInfo;
 import com.github.binarywang.demo.wechat.response.LoginResponse;
-import com.github.binarywang.demo.wechat.service.UserService;
+import com.github.binarywang.demo.wechat.service.MiniUserService;
 import com.github.binarywang.demo.wechat.utils.JsonUtils;
 import com.github.binarywang.demo.wechat.utils.ThreeDES;
 
@@ -41,7 +41,7 @@ public class WxMaUserController {
     @Autowired
     private WxMaService wxService;
     @Autowired
-	private UserService userService;
+	private MiniUserService userService;
 
     /**
      * 登陆接口
@@ -67,7 +67,7 @@ public class WxMaUserController {
             // 解密用户信息
             WxMaUserInfo userInfo = this.wxService.getUserService().getUserInfo(session.getSessionKey(), wechatInfo.getEncryptedData(), wechatInfo.getIv());
             userInfo.setUnionId(session.getUnionid());
-    			User user = userService.addUser(userInfo, systemInfo);
+    			MiniUser user = userService.addUser(userInfo, systemInfo);
     			LoginResponse loginResponse = new LoginResponse();
     			loginResponse.setUser_info(userInfo);
     			try {

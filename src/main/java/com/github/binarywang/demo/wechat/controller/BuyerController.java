@@ -4,11 +4,17 @@ import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 
-import com.github.binarywang.demo.wechat.bean.User;
+import com.github.binarywang.demo.wechat.bean.MiniUser;
+import com.github.binarywang.demo.wechat.exception.ProcessStatusCode;
 import com.github.binarywang.demo.wechat.request.BuyerAccount;
+import com.github.binarywang.demo.wechat.request.OperationRequest;
 import com.github.binarywang.demo.wechat.request.UserInfo;
-import com.github.binarywang.demo.wechat.service.UserService;
+import com.github.binarywang.demo.wechat.response.IncomeInfo;
+import com.github.binarywang.demo.wechat.response.IndexResponse;
+import com.github.binarywang.demo.wechat.service.MiniUserService;
 import com.github.binarywang.demo.wechat.utils.JsonUtils;
+import com.github.binarywang.demo.wechat.utils.ThreeDES;
+
 import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.UnsupportedEncodingException;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -29,14 +37,35 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 @RequestMapping("/buyer")
-public class AccountController {
+public class BuyerController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private WxMaService wxService;
     @Autowired
-	private UserService userService;
+	private MiniUserService userService;
 
+    /**
+     * 首页
+     */
+    @PostMapping("buyerIndex")
+    public String index(@RequestBody OperationRequest operationRequest) {
+        if (StringUtils.isBlank(operationRequest.getHaihu_session())) {
+            return "empty session";
+        }
+        this.logger.info(operationRequest.getHaihu_session());
+        Long userId = Long.parseLong(ThreeDES.decryptMode(operationRequest.getHaihu_session()));
+        
+        IndexResponse indexResponse = new IndexResponse();
+        	indexResponse.setHaihu_session(operationRequest.getHaihu_session());
+        	indexResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
+        	indexResponse.setUser_id(String.valueOf(userId));
+        	IncomeInfo income = new IncomeInfo();
+        	indexResponse.setIncome(income);
+        	indexResponse.setUnauth_num("2");
+        return JsonUtils.toJson(indexResponse);
+    }
+    
     /**
      * 添加账号
      */
@@ -46,7 +75,7 @@ public class AccountController {
             return "empty jscode";
         }
         
-        User users = userService.getUserById(1835l);
+        MiniUser users = userService.getUserById(1835l);
         //System.out.println(userInfo.getNickName());
         try {
             WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo("11");
@@ -64,22 +93,5 @@ public class AccountController {
         }
     }
 
-    /**
-     * <pre>
-     * 获取账号信息接口
-     * </pre>
-     */
-    @GetMapping("info")
-    public String info(String sessionKey, String signature, String rawData, String encryptedData, String iv) {
-        // 用户信息校验
-        if (!this.wxService.getUserService().checkUserInfo(sessionKey, rawData, signature)) {
-            return "user check failed";
-        }
-
-        // 解密用户信息
-        WxMaUserInfo userInfo = this.wxService.getUserService().getUserInfo(sessionKey, encryptedData, iv);
-
-        return JsonUtils.toJson(userInfo);
-    }
 
 }
