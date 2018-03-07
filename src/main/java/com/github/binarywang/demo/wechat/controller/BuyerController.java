@@ -4,6 +4,7 @@ import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 
+import com.github.binarywang.demo.wechat.bean.MiniIncome;
 import com.github.binarywang.demo.wechat.bean.MiniUser;
 import com.github.binarywang.demo.wechat.exception.ProcessStatusCode;
 import com.github.binarywang.demo.wechat.request.BuyerAccount;
@@ -11,6 +12,7 @@ import com.github.binarywang.demo.wechat.request.OperationRequest;
 import com.github.binarywang.demo.wechat.request.UserInfo;
 import com.github.binarywang.demo.wechat.response.IncomeInfo;
 import com.github.binarywang.demo.wechat.response.IndexResponse;
+import com.github.binarywang.demo.wechat.service.MiniIncomeService;
 import com.github.binarywang.demo.wechat.service.MiniUserService;
 import com.github.binarywang.demo.wechat.utils.JsonUtils;
 import com.github.binarywang.demo.wechat.utils.ThreeDES;
@@ -43,7 +45,7 @@ public class BuyerController {
     @Autowired
     private WxMaService wxService;
     @Autowired
-	private MiniUserService userService;
+	private MiniIncomeService miniIncomeService;
 
     /**
      * 首页
@@ -55,12 +57,17 @@ public class BuyerController {
         }
         this.logger.info(operationRequest.getHaihu_session());
         Long userId = Long.parseLong(ThreeDES.decryptMode(operationRequest.getHaihu_session()));
-        
+        MiniIncome miniIncome = miniIncomeService.getMiniIncomeByUserId(userId);
         IndexResponse indexResponse = new IndexResponse();
         	indexResponse.setHaihu_session(operationRequest.getHaihu_session());
         	indexResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
         	indexResponse.setUser_id(String.valueOf(userId));
         	IncomeInfo income = new IncomeInfo();
+        	income.setCan_presented(String.valueOf(miniIncome.getCanPresented()));
+        	income.setAlready_presented(String.valueOf(miniIncome.getAlreadyPresented()));
+        	income.setDeduct(String.valueOf(miniIncome.getDeduct()));
+        	income.setExpect_presented(String.valueOf(miniIncome.getExpectPresented()));
+        	income.setAmount(String.valueOf(miniIncome.getAlreadyPresented()+miniIncome.getCanPresented()+miniIncome.getExpectPresented()-miniIncome.getDeduct()));
         	indexResponse.setIncome(income);
         	indexResponse.setUnauth_num("2");
         return JsonUtils.toJson(indexResponse);
@@ -75,8 +82,6 @@ public class BuyerController {
             return "empty jscode";
         }
         
-        MiniUser users = userService.getUserById(1835l);
-        //System.out.println(userInfo.getNickName());
         try {
             WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo("11");
             this.logger.info(session.getSessionKey());
