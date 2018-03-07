@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
- * @author <a href="https://github.com/binarywang">Binary Wang</a>
+ * @author liuxf
  */
 @Controller
 public class WxErrorController implements ErrorController {

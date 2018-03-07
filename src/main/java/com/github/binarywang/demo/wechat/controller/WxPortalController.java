@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 
 /**
- * @author <a href="https://github.com/binarywang">Binary Wang</a>
+ * @author liuxf
  */
 @RestController
 @RequestMapping("/wechat/portal")

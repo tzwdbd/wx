@@ -1,30 +1,40 @@
 package com.github.binarywang.demo.wechat.controller;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
-import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
-import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
-import com.github.binarywang.demo.wechat.bean.User;
-import com.github.binarywang.demo.wechat.service.UserService;
-import com.github.binarywang.demo.wechat.utils.JsonUtils;
-import me.chanjar.weixin.common.exception.WxErrorException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
+import com.github.binarywang.demo.wechat.bean.User;
+import com.github.binarywang.demo.wechat.exception.ProcessStatusCode;
+import com.github.binarywang.demo.wechat.request.LoginRequest;
+import com.github.binarywang.demo.wechat.request.SystemInfo;
+import com.github.binarywang.demo.wechat.request.WechatInfo;
+import com.github.binarywang.demo.wechat.response.LoginResponse;
+import com.github.binarywang.demo.wechat.service.UserService;
+import com.github.binarywang.demo.wechat.utils.JsonUtils;
+import com.github.binarywang.demo.wechat.utils.ThreeDES;
+
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
+import me.chanjar.weixin.common.exception.WxErrorException;
 
 /**
  * 微信小程序用户接口
  *
- * @author <a href="https://github.com/binarywang">Binary Wang</a>
+ * @author liuxf
  */
 @RestController
-@RequestMapping("/wechat/user")
+@RequestMapping("/mp")
 public class WxMaUserController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -36,24 +46,38 @@ public class WxMaUserController {
     /**
      * 登陆接口
      */
-    @GetMapping("login")
-    public String login(String code) {
-        if (StringUtils.isBlank(code)) {
+    @PostMapping("mpLogin")
+    public String login(@RequestBody LoginRequest loginRequest) {
+        if (StringUtils.isBlank(loginRequest.getCode())) {
             return "empty jscode";
         }
-        
-        User users = userService.getUserById(1835l);
-        System.out.println(users.getNick());
         try {
-            WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo(code);
+            WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo(loginRequest.getCode());
             this.logger.info(session.getSessionKey());
             this.logger.info(session.getOpenid());
             this.logger.info(session.getExpiresin().toString());
-            //保存用户
-//    			User user = new User();
-//    			user.setId(1);
-//    			userService.add(user);
-            return JsonUtils.toJson(session);
+            this.logger.info(session.getUnionid());
+            WechatInfo wechatInfo = loginRequest.getWechat_userInfo();
+            SystemInfo systemInfo = loginRequest.getSystem_info();
+            // 用户信息校验
+            if (!this.wxService.getUserService().checkUserInfo(session.getSessionKey(), wechatInfo.getRawData(), wechatInfo.getSignature())) {
+                return "user check failed";
+            }
+
+            // 解密用户信息
+            WxMaUserInfo userInfo = this.wxService.getUserService().getUserInfo(session.getSessionKey(), wechatInfo.getEncryptedData(), wechatInfo.getIv());
+            userInfo.setUnionId(session.getUnionid());
+    			User user = userService.addUser(userInfo, systemInfo);
+    			LoginResponse loginResponse = new LoginResponse();
+    			loginResponse.setUser_info(userInfo);
+    			try {
+					loginResponse.setHaihu_session(ThreeDES.encryptMode(String.valueOf(user.getId()).getBytes("UTF-8")));
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+    			loginResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
+    			loginResponse.setUser_id(String.valueOf(user.getId()));
+            return JsonUtils.toJson(loginResponse);
         } catch (WxErrorException e) {
             this.logger.error(e.getMessage(), e);
             return e.toString();

@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Configuration;
 import java.io.File;
 
 /**
- * @author <a href="https://github.com/binarywang">Binary Wang</a>
+ * @author liuxf
  */
 @Configuration
 @ConditionalOnClass(WxMaService.class)

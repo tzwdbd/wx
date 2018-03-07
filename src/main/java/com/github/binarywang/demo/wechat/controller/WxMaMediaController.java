@@ -26,7 +26,7 @@ import java.util.List;
  *  Created by BinaryWang on 2017/6/16.
  * </pre>
  *
- * @author <a href="https://github.com/binarywang">Binary Wang</a>
+ * @author liuxf
  */
 @RestController
 @RequestMapping("/wechat/media")
