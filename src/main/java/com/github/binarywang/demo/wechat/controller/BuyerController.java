@@ -1,8 +1,17 @@
 package com.github.binarywang.demo.wechat.controller;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
-import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
-import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.github.binarywang.demo.wechat.bean.MallDefinition;
 import com.github.binarywang.demo.wechat.bean.MiniIncome;
@@ -14,7 +23,6 @@ import com.github.binarywang.demo.wechat.request.BuyerAccount;
 import com.github.binarywang.demo.wechat.request.Mall;
 import com.github.binarywang.demo.wechat.request.OperationRequest;
 import com.github.binarywang.demo.wechat.request.UseAccountRequest;
-import com.github.binarywang.demo.wechat.request.UserInfo;
 import com.github.binarywang.demo.wechat.response.AccountListResponse;
 import com.github.binarywang.demo.wechat.response.AccountResponse;
 import com.github.binarywang.demo.wechat.response.GetCreateResponse;
@@ -27,23 +35,6 @@ import com.github.binarywang.demo.wechat.service.MiniUserService;
 import com.github.binarywang.demo.wechat.service.OrderAccountService;
 import com.github.binarywang.demo.wechat.utils.JsonUtils;
 import com.github.binarywang.demo.wechat.utils.ThreeDES;
-
-import me.chanjar.weixin.common.exception.WxErrorException;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * 账号处理
@@ -105,7 +96,7 @@ public class BuyerController {
         orderAccount.setAccountType(mall.getMall());
         orderAccount.setPayAccount(buyerAccount.getAccount());
         orderAccount.setStatus(20);
-        orderAccount.setAccountSource(buyerAccount.getHaihu_session());
+        orderAccount.setAccountSource(String.valueOf(userId));
         try {
 			orderAccount.setLoginPwd(ThreeDES.encryptMode(buyerAccount.getPassword().getBytes("UTF-8")));
 		} catch (UnsupportedEncodingException e) {
@@ -170,7 +161,7 @@ public class BuyerController {
         if(mallId>0) {
 	        MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionById(mallId);
 	        List<BuyerAccount> accountList = new ArrayList<BuyerAccount>();
-	        List<OrderAccount> orderAccounts = orderAccountService.getOrderAccountByAccountSource(accountListRequest.getHaihu_session(), mallDefinition.getName());
+	        List<OrderAccount> orderAccounts = orderAccountService.getOrderAccountByAccountSource(String.valueOf(userId), mallDefinition.getName());
 	        //获取邮箱
 	        MiniUser miniUser =  userService.getUserById(userId);
 	        for(OrderAccount orderAccount:orderAccounts) {
@@ -253,9 +244,9 @@ public class BuyerController {
         Long userId = Long.parseLong(ThreeDES.decryptMode(useAccountRequest.getHaihu_session()));
         
         OrderAccount orderAccount = orderAccountService.getOrderAccountByAccountId(Integer.parseInt(useAccountRequest.getAccount_id()));
-        if("0".equals(orderAccount.getStatus())) {
+        if("0".equals(useAccountRequest.getStatus())) {
         		orderAccount.setStatus(1);
-        }else if("1".equals(orderAccount.getStatus())) {
+        }else if("1".equals(useAccountRequest.getStatus())) {
         		orderAccount.setStatus(0);
         }
         orderAccountService.updateOrderAccount(orderAccount);
