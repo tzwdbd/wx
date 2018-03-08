@@ -1,5 +1,7 @@
 package com.github.binarywang.demo.wechat.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,16 @@ public class OrderAccountServiceImpl implements OrderAccountService {
 	@Override
 	public int add(OrderAccount orderAccount) {
 		return accountMapper.add(orderAccount);
+	}
+
+	@Override
+	public List<OrderAccount> getOrderAccountByAccountSource(String accountSource, String accountType) {
+		return accountMapper.getOrderAccountByAccountSource(accountSource, accountType);
+	}
+
+	@Override
+	public int updateOrderAccount(OrderAccount orderAccount) {
+		return accountMapper.updateOrderAccount(orderAccount);
 	}
 
 

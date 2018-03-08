@@ -71,4 +71,9 @@ public class MiniUserServiceImpl implements MiniUserService {
 		return user;
 	}
 
+	@Override
+	public int updateMail(Long id, String mail) {
+		return userMapper.updateMail(id, mail);
+	}
+
 }

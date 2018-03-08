@@ -33,5 +33,6 @@ public class MiniUser implements Serializable{
 	private String system;
 	private String platform;
 	private String status;
+	private String mail;
 
 }

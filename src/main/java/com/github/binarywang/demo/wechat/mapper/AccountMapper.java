@@ -1,5 +1,7 @@
 package com.github.binarywang.demo.wechat.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
@@ -23,5 +25,10 @@ public interface AccountMapper {
 
 	@Update("UPDATE automan.order_account_new SET username = #{user.username} , age = #{user.age} WHERE id = #{id}")
 	public int update(@Param("id") Integer id, @Param("user") MiniUser user);
-
+	
+	@Select("SELECT * FROM automan.order_account_new WHERE account_source = #{accountSource} and account_type = #{accountType}")
+	List<OrderAccount> getOrderAccountByAccountSource(String accountSource, String accountType);
+	
+	@Update("UPDATE automan.order_account_new SET pay_account = #{orderAccount.payAccount} , login_pwd = #{orderAccount.loginPwd} WHERE account_id = #{orderAccount.accoutId}")
+	public int updateOrderAccount(OrderAccount orderAccount);
 }

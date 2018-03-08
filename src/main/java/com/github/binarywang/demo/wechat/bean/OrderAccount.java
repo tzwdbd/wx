@@ -36,5 +36,6 @@ public class OrderAccount implements Serializable{
     private Long expressCompanyId;
     private Date effectiveTime;
     private String isTaxReturn;
+    private String accountSource;
 
 }

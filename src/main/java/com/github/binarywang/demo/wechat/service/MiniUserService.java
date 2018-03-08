@@ -22,5 +22,7 @@ public interface MiniUserService {
 	public int delete(Integer id);
 	
 	public MiniUser addUser(WxMaUserInfo userInfo,SystemInfo systemInfo);
+	
+	public int updateMail(Long id, String mail);
 
 }

@@ -19,7 +19,7 @@ import com.github.binarywang.demo.wechat.provider.SqlProvider;
 public interface MiniUserMapper {
 
 	@Select("SELECT * FROM oversea.mini_users WHERE id = #{id}")
-	MiniUser getUserById(Long id);
+	MiniUser getUserById(@Param("id")Long id);
 
 	@SelectProvider(type=SqlProvider.class,method="selectUser")  
 	public List<MiniUser> getUserList(MiniUser user);
@@ -33,5 +33,7 @@ public interface MiniUserMapper {
 
 	@Delete("DELETE from oversea.mini_users where id = #{id} ")
 	public int delete(Integer id);
-
+	
+	@Update("UPDATE oversea.mini_users SET mail = #{mail} WHERE id = #{id}")
+	public int updateMail(@Param("id") Long id, @Param("mail") String mail);
 }
