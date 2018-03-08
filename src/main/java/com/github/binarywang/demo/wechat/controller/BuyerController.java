@@ -6,14 +6,19 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 
 import com.github.binarywang.demo.wechat.bean.MiniIncome;
 import com.github.binarywang.demo.wechat.bean.MiniUser;
+import com.github.binarywang.demo.wechat.bean.OrderAccount;
 import com.github.binarywang.demo.wechat.exception.ProcessStatusCode;
 import com.github.binarywang.demo.wechat.request.BuyerAccount;
+import com.github.binarywang.demo.wechat.request.Mall;
 import com.github.binarywang.demo.wechat.request.OperationRequest;
 import com.github.binarywang.demo.wechat.request.UserInfo;
+import com.github.binarywang.demo.wechat.response.AccountResponse;
+import com.github.binarywang.demo.wechat.response.GetCreateResponse;
 import com.github.binarywang.demo.wechat.response.IncomeInfo;
 import com.github.binarywang.demo.wechat.response.IndexResponse;
 import com.github.binarywang.demo.wechat.service.MiniIncomeService;
 import com.github.binarywang.demo.wechat.service.MiniUserService;
+import com.github.binarywang.demo.wechat.service.OrderAccountService;
 import com.github.binarywang.demo.wechat.utils.JsonUtils;
 import com.github.binarywang.demo.wechat.utils.ThreeDES;
 
@@ -43,7 +48,7 @@ public class BuyerController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private WxMaService wxService;
+    private OrderAccountService orderAccountService;
     @Autowired
 	private MiniIncomeService miniIncomeService;
 
@@ -77,25 +82,46 @@ public class BuyerController {
      * 添加账号
      */
     @PostMapping("addAccount")
-    public String login(String code,@RequestBody BuyerAccount buyerAccount) {
-        if (StringUtils.isBlank(code)) {
-            return "empty jscode";
+    public String login(@RequestBody BuyerAccount buyerAccount) {
+        if (StringUtils.isBlank(buyerAccount.getHaihu_session())) {
+            return "empty session";
         }
+        Mall mall = buyerAccount.getMall();
+        Long userId = Long.parseLong(ThreeDES.decryptMode(buyerAccount.getHaihu_session()));
         
+        OrderAccount orderAccount = new OrderAccount();
+        orderAccount.setAccountType(mall.getMall());
+        orderAccount.setPayAccount(buyerAccount.getAccount());
+        orderAccount.setStatus(20);
         try {
-            WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo("11");
-            this.logger.info(session.getSessionKey());
-            this.logger.info(session.getOpenid());
-            this.logger.info(session.getExpiresin().toString());
-            //保存用户
-//    			User user = new User();
-//    			user.setId(1);
-//    			userService.add(user);
-            return JsonUtils.toJson(session);
-        } catch (WxErrorException e) {
-            this.logger.error(e.getMessage(), e);
-            return e.toString();
+			orderAccount.setLoginPwd(ThreeDES.encryptMode(buyerAccount.getPassword().getBytes("UTF-8")));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+        orderAccountService.add(orderAccount);
+        AccountResponse accountResponse = new AccountResponse();
+        accountResponse.setHaihu_session(buyerAccount.getHaihu_session());
+        accountResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
+        accountResponse.setUser_id(String.valueOf(userId));
+        accountResponse.setAccount_id(String.valueOf(orderAccount.getAccountId()));
+        return JsonUtils.toJson(accountResponse);
+    }
+    
+    /**
+     * 添加账号
+     */
+    @PostMapping("getCreate")
+    public String getCreate(@RequestBody OperationRequest operationRequest) {
+        if (StringUtils.isBlank(operationRequest.getHaihu_session())) {
+            return "empty session";
         }
+        Long userId = Long.parseLong(ThreeDES.decryptMode(operationRequest.getHaihu_session()));
+        GetCreateResponse getCreateResponse = new GetCreateResponse();
+        getCreateResponse.setHaihu_session(operationRequest.getHaihu_session());
+        getCreateResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
+        getCreateResponse.setUser_id(String.valueOf(userId));
+        
+        return JsonUtils.toJson(getCreateResponse);
     }
 
 

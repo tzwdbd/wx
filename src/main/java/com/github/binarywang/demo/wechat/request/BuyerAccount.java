@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import lombok.Data;
 @Data
-public class BuyerAccount implements Serializable{
+public class BuyerAccount extends OperationRequest implements Serializable{
 	/**
 	 * 
 	 */
