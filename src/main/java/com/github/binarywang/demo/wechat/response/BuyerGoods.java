@@ -16,5 +16,6 @@ public class BuyerGoods implements Serializable{
 	private String number;
 	private String seq;
 	private String seq_desc;
+	private String status;
 
 }

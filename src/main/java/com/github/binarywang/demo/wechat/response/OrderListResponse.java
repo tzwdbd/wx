@@ -15,5 +15,6 @@ public class OrderListResponse extends CommonResponse implements Serializable{
 	 */
 	private static final long serialVersionUID = 5625233244887208609L;
 	private List<OrderInfo> order_list;
+	private List<Mall> mall_list;
 
 }

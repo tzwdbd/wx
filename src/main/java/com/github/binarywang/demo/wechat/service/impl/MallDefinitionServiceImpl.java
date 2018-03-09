@@ -30,6 +30,11 @@ public class MallDefinitionServiceImpl implements MallDefinitionService {
 		return mallDefinitionMapper.getMallDefinitionList(ids);
 	}
 
+	@Override
+	public MallDefinition getMallDefinitionByName(String name) {
+		return mallDefinitionMapper.getMallDefinitionByName(name);
+	}
+
 
 
 }

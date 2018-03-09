@@ -15,4 +15,6 @@ public interface OrderAccountService {
 	List<OrderAccount> getOrderAccountByAccountSource(String accountSource,String accountType);
 
 	public int updateOrderAccount(OrderAccount orderAccount);
+	
+	List<OrderAccount> getAOrderAccountByAccountSource(String accountSource);
 }

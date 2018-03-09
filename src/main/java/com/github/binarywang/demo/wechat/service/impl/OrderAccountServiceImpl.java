@@ -37,5 +37,10 @@ public class OrderAccountServiceImpl implements OrderAccountService {
 		return accountMapper.updateOrderAccount(orderAccount);
 	}
 
+	@Override
+	public List<OrderAccount> getAOrderAccountByAccountSource(String accountSource) {
+		return accountMapper.getAllOrderAccountByAccountSource(accountSource);
+	}
+
 
 }

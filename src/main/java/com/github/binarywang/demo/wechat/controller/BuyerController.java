@@ -2,7 +2,6 @@ package com.github.binarywang.demo.wechat.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -98,7 +97,8 @@ public class BuyerController {
         	income.setExpect_presented(String.valueOf(miniIncome.getExpectPresented()));
         	income.setAmount(String.valueOf(miniIncome.getAlreadyPresented()+miniIncome.getCanPresented()+miniIncome.getExpectPresented()-miniIncome.getDeduct()));
         	indexResponse.setIncome(income);
-        	indexResponse.setUnauth_num("2");
+        	List<MiniOrder> miniOrders = miniOrderService.getMiniOrderList(1, null, userId);
+        	indexResponse.setUnauth_num(String.valueOf(miniOrders.size()));
         return JsonUtils.toJson(indexResponse);
     }
     
@@ -116,7 +116,7 @@ public class BuyerController {
         OrderAccount orderAccount = new OrderAccount();
         orderAccount.setAccountType(mall.getMall());
         orderAccount.setPayAccount(buyerAccount.getAccount());
-        orderAccount.setStatus(20);
+        orderAccount.setStatus(2);
         orderAccount.setAccountSource(String.valueOf(userId));
         try {
 			orderAccount.setLoginPwd(ThreeDES.encryptMode(buyerAccount.getPassword().getBytes("UTF-8")));
@@ -148,23 +148,15 @@ public class BuyerController {
         getCreateResponse.setHaihu_session(operationRequest.getHaihu_session());
         getCreateResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
         getCreateResponse.setUser_id(String.valueOf(userId));
-        List<Mall> malls = new ArrayList<Mall>();
-        List<MallDefinition> mallDefinitions = mallDefinitionService.getMallDefinitionList("1,3,5");
-        for(MallDefinition m:mallDefinitions) {
-        		Mall mall = new Mall();
-        		mall.setCountry(m.getCountry());
-        		mall.setMall(m.getName());
-        		if(StringUtils.isBlank(m.getIcon())) {
-        			mall.setMall_icon("img.haihu.com/"+m.getIcon());
-        		}
-        		mall.setMall_id(String.valueOf(m.getId()));
-        		malls.add(mall);
-        }
+        
+        List<Mall> malls = getMallList();
         getCreateResponse.setMall_list(malls);
         return JsonUtils.toJson(getCreateResponse);
     }
     
-    /**
+    
+
+	/**
      * 账号列表
      */
     @PostMapping("accountList")
@@ -179,49 +171,33 @@ public class BuyerController {
         accountListResponse.setHaihu_session(accountListRequest.getHaihu_session());
         accountListResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
         accountListResponse.setUser_id(String.valueOf(userId));
-        if(mallId>0) {
-	        MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionById(mallId);
-	        List<BuyerAccount> accountList = new ArrayList<BuyerAccount>();
-	        List<OrderAccount> orderAccounts = orderAccountService.getOrderAccountByAccountSource(String.valueOf(userId), mallDefinition.getName());
-	        //获取邮箱
-	        MiniUser miniUser =  userService.getUserById(userId);
-	        for(OrderAccount orderAccount:orderAccounts) {
-	        		BuyerAccount buyerAccount = new BuyerAccount();
-	        		buyerAccount.setAccount(orderAccount.getPayAccount());
-	        		buyerAccount.setAccount_id(String.valueOf(orderAccount.getAccountId()));
-	        		buyerAccount.setMail(miniUser.getMail());
-	        		
-	        		Mall mall = new Mall();
-	        		mall.setCountry(mallDefinition.getCountry());
-	        		mall.setMall(mallDefinition.getName());
-	        		if(StringUtils.isBlank(mallDefinition.getIcon())) {
-	        			mall.setMall_icon("img.haihu.com/"+mallDefinition.getIcon());
-	        		}
-	        		mall.setMall_id(String.valueOf(mallDefinition.getId()));
-	        		
-	        		buyerAccount.setMall(mall);
-	        		buyerAccount.setStatus(String.valueOf(orderAccount.getStatus()));
-	        		accountList.add(buyerAccount);
-	        }
-	        accountListResponse.setAccount_list(accountList);
+      
+        List<BuyerAccount> accountList = new ArrayList<BuyerAccount>();
+        List<OrderAccount> orderAccounts = orderAccountService.getAOrderAccountByAccountSource(String.valueOf(userId));
+        //获取邮箱
+        MiniUser miniUser =  userService.getUserById(userId);
+        for(OrderAccount orderAccount:orderAccounts) {
+        		BuyerAccount buyerAccount = new BuyerAccount();
+        		buyerAccount.setAccount(orderAccount.getPayAccount());
+        		buyerAccount.setAccount_id(String.valueOf(orderAccount.getAccountId()));
+        		buyerAccount.setMail(miniUser.getMail());
+        		MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionByName(orderAccount.getAccountType());
+        		Mall mall = getMall(mallDefinition);
+        		buyerAccount.setMall(mall);
+        		buyerAccount.setStatus(String.valueOf(orderAccount.getStatus()));
+        		accountList.add(buyerAccount);
         }
-        List<Mall> malls = new ArrayList<Mall>();
-        List<MallDefinition> mallDefinitions = mallDefinitionService.getMallDefinitionList("1,3,5");
-        for(MallDefinition m:mallDefinitions) {
-        		Mall mall = new Mall();
-        		mall.setCountry(m.getCountry());
-        		mall.setMall(m.getName());
-        		if(StringUtils.isBlank(m.getIcon())) {
-        			mall.setMall_icon("img.haihu.com/"+m.getIcon());
-        		}
-        		mall.setMall_id(String.valueOf(m.getId()));
-        		malls.add(mall);
+        accountListResponse.setAccount_list(accountList);
+        	if(mallId==0) {
+	        List<Mall> malls = getMallList();
+	        accountListResponse.setMall_list(malls);
         }
-        accountListResponse.setMall_list(malls);
         return JsonUtils.toJson(accountListResponse);
     }
     
-    /**
+    
+
+	/**
      * 修改账号
      */
     @PostMapping("modifyAccount")
@@ -280,8 +256,8 @@ public class BuyerController {
         BuyerAccount buyerAccount = new BuyerAccount();
 		buyerAccount.setAccount(orderAccount.getPayAccount());
 		buyerAccount.setAccount_id(String.valueOf(orderAccount.getAccountId()));
-		Mall mall = new Mall();
-		mall.setMall(orderAccount.getAccountType());
+		MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionByName(orderAccount.getAccountType());
+		Mall mall = getMall(mallDefinition);
 		buyerAccount.setMall(mall);
 		buyerAccount.setStatus(String.valueOf(orderAccount.getStatus()));
         useAccountResponse.setAccount(buyerAccount);
@@ -320,6 +296,8 @@ public class BuyerController {
         		}
         }
         orderListResponse.setOrder_list(orderList);
+        List<Mall> mallList = getMallList();
+        orderListResponse.setMall_list(mallList);
         return JsonUtils.toJson(orderListResponse);
     }
     
@@ -345,11 +323,12 @@ public class BuyerController {
         BuyerAccount buyerAccount = new BuyerAccount();
 		buyerAccount.setAccount(orderAccount.getPayAccount());
 		buyerAccount.setAccount_id(String.valueOf(orderAccount.getAccountId()));
-		Mall mall = new Mall();
-		mall.setMall(orderAccount.getAccountType());
+		MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionByName(orderAccount.getAccountType());
+		Mall mall = getMall(mallDefinition);
 		buyerAccount.setMall(mall);
 		buyerAccount.setStatus(String.valueOf(orderAccount.getStatus()));
         orderDetailResponse.setAccount(buyerAccount);
+        /*TODO*/
         List<BuyerExpressNode> expressNodeList = new ArrayList<BuyerExpressNode>();
     		BuyerExpressNode buyerExpressNode1 = new BuyerExpressNode();
     		buyerExpressNode1.setCode("3");
@@ -400,6 +379,7 @@ public class BuyerController {
 		orderInfo.setEnd_time(String.valueOf(orderDetails.get(0).getGmtCreate().getTime() + (30 * 60*1000)));
 		List<BuyerGoods> goodsList = new ArrayList<BuyerGoods>();
 		List<BuyerPackage> packageList = new ArrayList<BuyerPackage>();
+		List<BuyerGoods> packageGoodsList = new ArrayList<BuyerGoods>();
 		float myPrice = 0f ;
 		float rmbPrice = 0f ;
 		for(OrderDetail orderDetail:orderDetails) {
@@ -408,6 +388,8 @@ public class BuyerController {
 			buyerGoods.setImg("img.haihu.com/"+img);
 			String name = productMapper.getProductName(orderDetail.getProductId());
 			buyerGoods.setMall_price(orderDetail.getMyPrice());
+			/*TODO*/
+			//buyerGoods.setStatus(status);
 			buyerGoods.setNumber(String.valueOf(orderDetail.getNum()));
 			buyerGoods.setSeq(String.valueOf(orderDetail.getProductEntityId()));
 			if(!StringUtils.isBlank(orderDetail.getProductSku())) {
@@ -416,7 +398,10 @@ public class BuyerController {
 			buyerGoods.setTitle(name);
 			if(orderDetail.getStatus()==100) {
 				BuyerPackage buyerPackage = new BuyerPackage();
-				buyerPackage.setGoods(buyerGoods);
+				packageGoodsList.add(buyerGoods);
+				buyerPackage.setGoods_list(packageGoodsList);
+				/*TODO*/
+				//buyerPackage.setStatus(status);
 				buyerPackage.setExpress_no(orderDetail.getExpressNo());
 				packageList.add(buyerPackage);
 			}else {
@@ -438,11 +423,32 @@ public class BuyerController {
 		}
 		
 		orderInfo.setRmb_price(String.valueOf(rmbPrice));
+		/*TODO*/
 		//orderInfo.setStatus(String.valueOf(m.getStatus()));
 		orderInfo.setTotal_price(String.valueOf(myPrice));
 		return orderInfo;
     }
 
-
+    private List<Mall> getMallList() {
+    		List<Mall> malls = new ArrayList<Mall>();
+    		/*TODO*/
+        List<MallDefinition> mallDefinitions = mallDefinitionService.getMallDefinitionList("1,3,5");
+        for(MallDefinition m:mallDefinitions) {
+        		Mall mall = 	getMall(m);
+        		malls.add(mall);
+        }
+        return malls;
+	}
+    
+    private Mall getMall(MallDefinition mallDefinition) {
+    		Mall mall = new Mall();
+		mall.setCountry(mallDefinition.getCountry());
+		mall.setMall(mallDefinition.getName());
+		if(StringUtils.isBlank(mallDefinition.getIcon())) {
+			mall.setMall_icon("img.haihu.com/"+mallDefinition.getIcon());
+		}
+		mall.setMall_id(String.valueOf(mallDefinition.getId()));
+		return mall;
+	}
 
 }

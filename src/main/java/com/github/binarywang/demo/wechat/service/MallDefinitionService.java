@@ -11,5 +11,7 @@ public interface MallDefinitionService {
 	MallDefinition getMallDefinitionById(Long id);
 
 	List<MallDefinition> getMallDefinitionList(String ids);
+	
+	MallDefinition getMallDefinitionByName(String name);
 
 }
