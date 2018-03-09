@@ -2,6 +2,7 @@ package com.github.binarywang.demo.wechat.response;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.github.binarywang.demo.wechat.request.Mall;
 
@@ -18,8 +19,8 @@ public class OrderInfo implements Serializable{
 	private String total_price;
 	private String rmb_price;
 	private String voucher;
-	private String goods_list;
-	private String package_list;
+	private List<BuyerGoods> goods_list;
+	private List<BuyerPackage> package_list;
 	private String create_time;
 	private String end_time;
 	private String order_no;

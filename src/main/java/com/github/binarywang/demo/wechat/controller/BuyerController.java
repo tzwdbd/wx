@@ -19,18 +19,25 @@ import com.github.binarywang.demo.wechat.bean.MiniIncome;
 import com.github.binarywang.demo.wechat.bean.MiniOrder;
 import com.github.binarywang.demo.wechat.bean.MiniUser;
 import com.github.binarywang.demo.wechat.bean.OrderAccount;
+import com.github.binarywang.demo.wechat.bean.OrderDetail;
 import com.github.binarywang.demo.wechat.exception.ProcessStatusCode;
+import com.github.binarywang.demo.wechat.mapper.ProductMapper;
 import com.github.binarywang.demo.wechat.request.AccountListRequest;
 import com.github.binarywang.demo.wechat.request.BuyerAccount;
 import com.github.binarywang.demo.wechat.request.Mall;
 import com.github.binarywang.demo.wechat.request.OperationRequest;
+import com.github.binarywang.demo.wechat.request.OrderDetailRequest;
 import com.github.binarywang.demo.wechat.request.OrderListRequest;
 import com.github.binarywang.demo.wechat.request.UseAccountRequest;
 import com.github.binarywang.demo.wechat.response.AccountListResponse;
 import com.github.binarywang.demo.wechat.response.AccountResponse;
+import com.github.binarywang.demo.wechat.response.BuyerExpressNode;
+import com.github.binarywang.demo.wechat.response.BuyerGoods;
+import com.github.binarywang.demo.wechat.response.BuyerPackage;
 import com.github.binarywang.demo.wechat.response.GetCreateResponse;
 import com.github.binarywang.demo.wechat.response.IncomeInfo;
 import com.github.binarywang.demo.wechat.response.IndexResponse;
+import com.github.binarywang.demo.wechat.response.OrderDetailResponse;
 import com.github.binarywang.demo.wechat.response.OrderInfo;
 import com.github.binarywang.demo.wechat.response.OrderListResponse;
 import com.github.binarywang.demo.wechat.response.UseAccountResponse;
@@ -39,8 +46,10 @@ import com.github.binarywang.demo.wechat.service.MiniIncomeService;
 import com.github.binarywang.demo.wechat.service.MiniOrderService;
 import com.github.binarywang.demo.wechat.service.MiniUserService;
 import com.github.binarywang.demo.wechat.service.OrderAccountService;
+import com.github.binarywang.demo.wechat.service.OrderDetailService;
 import com.github.binarywang.demo.wechat.utils.JsonUtils;
 import com.github.binarywang.demo.wechat.utils.ThreeDES;
+import com.google.gson.Gson;
 
 /**
  * 账号处理
@@ -62,6 +71,10 @@ public class BuyerController {
 	private MiniUserService userService;
     @Autowired
 	private MiniOrderService miniOrderService;
+    @Autowired
+    private OrderDetailService orderDetailService;
+    @Autowired
+    private ProductMapper productMapper;
 
     /**
      * 首页
@@ -296,21 +309,138 @@ public class BuyerController {
         orderListResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
         orderListResponse.setUser_id(String.valueOf(userId));
         List<MiniOrder> miniOrders = miniOrderService.getMiniOrderList(type, siteName, userId);
-        List<OrderInfo> order_list = new ArrayList<OrderInfo>();
+        List<OrderInfo> orderList = new ArrayList<OrderInfo>();
+        List<String> orders = new ArrayList<String>();
         for(MiniOrder m:miniOrders) {
-        		OrderInfo orderInfo = new OrderInfo();
-        		orderInfo.setCreate_time(String.valueOf(m.getGmtCreate().getTime()));
-        		orderInfo.setEnd_time(String.valueOf(m.getGmtCreate().getTime() + (30 * 60*1000)));
-        		//orderInfo.setGoods_list(goods_list);
-        		//orderInfo.setIncome(income);
-        		//orderInfo.setMall(mall);
-        		orderInfo.setOrder_id(String.valueOf(m.getId()));
-        		orderInfo.setOrder_no(m.getOrderNo());
-        		//orderInfo.set
-        		order_list.add(orderInfo);
+        		if(!orders.contains(m.getOrderNo())) {
+        			List<OrderDetail> orderDetails = orderDetailService.getOrderDetailList(m.getOrderNo());
+        			OrderInfo orderInfo = getOrderInfo(orderDetails);
+	        		orderList.add(orderInfo);
+	        		orders.add(m.getOrderNo());
+        		}
         }
-        orderListResponse.setOrder_list(order_list);
+        orderListResponse.setOrder_list(orderList);
         return JsonUtils.toJson(orderListResponse);
+    }
+    
+    /**
+     * 订单详情
+     */
+    @PostMapping("orderDetails")
+    public String orderDetails(@RequestBody OrderDetailRequest orderDetailRequest) {
+        if (StringUtils.isBlank(orderDetailRequest.getHaihu_session())) {
+            return "empty session";
+        }
+        Long userId = Long.parseLong(ThreeDES.decryptMode(orderDetailRequest.getHaihu_session()));
+        String orderNo = orderDetailRequest.getOrder_no();
+        List<OrderDetail> orderDetails = orderDetailService.getOrderDetailList(orderNo);
+        OrderInfo orderInfo = getOrderInfo(orderDetails);
+        OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
+        orderDetailResponse.setHaihu_session(orderDetailRequest.getHaihu_session());
+        orderDetailResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
+        orderDetailResponse.setUser_id(String.valueOf(userId));
+        orderDetailResponse.setOrder(orderInfo);
+        
+        OrderAccount orderAccount = orderAccountService.getOrderAccountByAccountId(orderDetails.get(0).getAccountId());
+        BuyerAccount buyerAccount = new BuyerAccount();
+		buyerAccount.setAccount(orderAccount.getPayAccount());
+		buyerAccount.setAccount_id(String.valueOf(orderAccount.getAccountId()));
+		Mall mall = new Mall();
+		mall.setMall(orderAccount.getAccountType());
+		buyerAccount.setMall(mall);
+		buyerAccount.setStatus(String.valueOf(orderAccount.getStatus()));
+        orderDetailResponse.setAccount(buyerAccount);
+        List<BuyerExpressNode> expressNodeList = new ArrayList<BuyerExpressNode>();
+    		BuyerExpressNode buyerExpressNode1 = new BuyerExpressNode();
+    		buyerExpressNode1.setCode("3");
+    		buyerExpressNode1.setDisplay("商城发货");
+    		buyerExpressNode1.setStatus("1");
+    		expressNodeList.add(buyerExpressNode1);
+    		BuyerExpressNode buyerExpressNode2 = new BuyerExpressNode();
+    		buyerExpressNode2.setCode("4");
+    		buyerExpressNode2.setDisplay("确认签收");
+    		buyerExpressNode2.setStatus("1");
+    		expressNodeList.add(buyerExpressNode2);
+    		BuyerExpressNode buyerExpressNode3 = new BuyerExpressNode();
+    		buyerExpressNode3.setCode("5");
+    		buyerExpressNode3.setDisplay("中转仓出库");
+    		buyerExpressNode3.setStatus("1");
+    		expressNodeList.add(buyerExpressNode3);
+    		BuyerExpressNode buyerExpressNode4 = new BuyerExpressNode();
+    		buyerExpressNode4.setCode("6");
+    		buyerExpressNode4.setDisplay("用户签收");
+    		buyerExpressNode4.setStatus("1");
+    		expressNodeList.add(buyerExpressNode4);
+        orderDetailResponse.setExpress_node_list(expressNodeList);
+        return JsonUtils.toJson(orderDetailResponse);
+    }
+    
+    public static String getSku(String value) {
+        Gson gson = new Gson();
+        String str = "";
+        ArrayList list = gson.fromJson(value, ArrayList.class);
+        for (Object s : list) {
+            List al = (List) s;
+            int i = 0;
+            for (Object ss : al) {
+            		if(i==0) {
+            			str = str+ss;
+            		}else {
+            			str = str+":"+ss+" ";
+            		}
+            		i++;
+            }
+        }
+        return str;
+    }
+    
+    OrderInfo getOrderInfo(List<OrderDetail> orderDetails){
+    		OrderInfo orderInfo = new OrderInfo();
+		orderInfo.setCreate_time(String.valueOf(orderDetails.get(0).getGmtCreate().getTime()));
+		orderInfo.setEnd_time(String.valueOf(orderDetails.get(0).getGmtCreate().getTime() + (30 * 60*1000)));
+		List<BuyerGoods> goodsList = new ArrayList<BuyerGoods>();
+		List<BuyerPackage> packageList = new ArrayList<BuyerPackage>();
+		float myPrice = 0f ;
+		float rmbPrice = 0f ;
+		for(OrderDetail orderDetail:orderDetails) {
+			BuyerGoods buyerGoods = new BuyerGoods();
+			String img = productMapper.getProductImg(orderDetail.getProductId());
+			buyerGoods.setImg("img.haihu.com/"+img);
+			String name = productMapper.getProductName(orderDetail.getProductId());
+			buyerGoods.setMall_price(orderDetail.getMyPrice());
+			buyerGoods.setNumber(String.valueOf(orderDetail.getNum()));
+			buyerGoods.setSeq(String.valueOf(orderDetail.getProductEntityId()));
+			if(!StringUtils.isBlank(orderDetail.getProductSku())) {
+				buyerGoods.setSeq_desc(getSku(orderDetail.getProductSku()));
+			}
+			buyerGoods.setTitle(name);
+			if(orderDetail.getStatus()==100) {
+				BuyerPackage buyerPackage = new BuyerPackage();
+				buyerPackage.setGoods(buyerGoods);
+				buyerPackage.setExpress_no(orderDetail.getExpressNo());
+				packageList.add(buyerPackage);
+			}else {
+				goodsList.add(buyerGoods);
+			}
+			
+			myPrice += Float.parseFloat(orderDetail.getMyPrice()) * orderDetail.getNum();
+			rmbPrice += Float.parseFloat(orderDetail.getRmbPrice()) * orderDetail.getNum();
+		}
+		orderInfo.setGoods_list(goodsList);
+		orderInfo.setPackage_list(packageList);
+		orderInfo.setIncome("5");
+		Mall mall = new Mall();
+		mall.setMall(orderDetails.get(0).getSiteName());
+		orderInfo.setMall(mall);
+		orderInfo.setOrder_no(orderDetails.get(0).getOrderNo());
+		if(orderDetails.get(0).getOrderTime()!=null) {
+			orderInfo.setOrder_time(String.valueOf(orderDetails.get(0).getOrderTime().getTime()));
+		}
+		
+		orderInfo.setRmb_price(String.valueOf(rmbPrice));
+		//orderInfo.setStatus(String.valueOf(m.getStatus()));
+		orderInfo.setTotal_price(String.valueOf(myPrice));
+		return orderInfo;
     }
 
 
