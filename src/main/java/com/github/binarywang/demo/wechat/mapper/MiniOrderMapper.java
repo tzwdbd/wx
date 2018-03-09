@@ -19,7 +19,18 @@ public interface MiniOrderMapper {
 
 	@Select("SELECT * FROM oversea.mini_order WHERE status = #{status}")
 	List<MiniOrder> getMiniOrderList(Integer status);
-
+	
+	@Select("SELECT * FROM oversea.mini_order WHERE mini_user_id = #{miniUserId}")
+	List<MiniOrder> getAllMiniOrderList(Long miniUserId);
+	
+	@Select("SELECT * FROM oversea.mini_order WHERE mini_user_id = #{miniUserId} and site_name = #{siteName}")
+	List<MiniOrder> getAllMiniOrderBySiteNameList(Long miniUserId,String siteName);
+	
+	@Select("SELECT * FROM oversea.mini_order WHERE status = #{status} and mini_user_id = #{miniUserId}")
+	List<MiniOrder> getMiniOrderByUserIdList(Integer status,Long miniUserId);
+	
+	@Select("SELECT * FROM oversea.mini_order WHERE status = #{status} and mini_user_id = #{miniUserId} and site_name = #{siteName}")
+	List<MiniOrder> getMiniOrderBySiteNameList(Integer status,Long miniUserId,String siteName);
 
 	@Update("UPDATE oversea.mini_order SET status = #{status}  WHERE id = #{id}")
 	public int updateStatus(@Param("id") Long id, @Param("status") Integer status);

@@ -25,8 +25,28 @@ public class MiniOrderServiceImpl implements MiniOrderService {
 	private MiniOrderMapper miniOrderMapper;
 
 	@Override
-	public List<MiniOrder> getMiniOrderList(Integer status) {
-		return miniOrderMapper.getMiniOrderList(status);
+	public List<MiniOrder> getMiniOrderList(Integer type,String siteName,Long userId) {
+		//全部
+		if(type==0) {
+			if(siteName ==null) {
+				return miniOrderMapper.getAllMiniOrderList(userId);
+			}else {
+				return miniOrderMapper.getAllMiniOrderBySiteNameList(userId,siteName);
+			}
+		}else if (type==1) {
+			if(siteName ==null) {
+				return miniOrderMapper.getMiniOrderByUserIdList(0,userId);
+			}else {
+				return miniOrderMapper.getMiniOrderBySiteNameList(0, userId, siteName);
+			}
+		}else if (type==2) {
+			if(siteName ==null) {
+				return miniOrderMapper.getMiniOrderByUserIdList(5,userId);
+			}else {
+				return miniOrderMapper.getMiniOrderBySiteNameList(5, userId, siteName);
+			}
+		}
+		return null;
 	}
 
 	@Override

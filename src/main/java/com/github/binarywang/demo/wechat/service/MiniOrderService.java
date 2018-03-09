@@ -8,7 +8,7 @@ import com.github.binarywang.demo.wechat.bean.MiniOrder;
  */
 public interface MiniOrderService {
 	
-	List<MiniOrder> getMiniOrderList(Integer status);
+	List<MiniOrder> getMiniOrderList(Integer type,String siteName,Long userId);
 
 	public int updateStatus(Long id, Integer status);
 }

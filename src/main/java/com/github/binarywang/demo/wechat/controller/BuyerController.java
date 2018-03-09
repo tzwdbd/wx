@@ -2,6 +2,7 @@ package com.github.binarywang.demo.wechat.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.binarywang.demo.wechat.bean.MallDefinition;
 import com.github.binarywang.demo.wechat.bean.MiniIncome;
+import com.github.binarywang.demo.wechat.bean.MiniOrder;
 import com.github.binarywang.demo.wechat.bean.MiniUser;
 import com.github.binarywang.demo.wechat.bean.OrderAccount;
 import com.github.binarywang.demo.wechat.exception.ProcessStatusCode;
@@ -22,15 +24,19 @@ import com.github.binarywang.demo.wechat.request.AccountListRequest;
 import com.github.binarywang.demo.wechat.request.BuyerAccount;
 import com.github.binarywang.demo.wechat.request.Mall;
 import com.github.binarywang.demo.wechat.request.OperationRequest;
+import com.github.binarywang.demo.wechat.request.OrderListRequest;
 import com.github.binarywang.demo.wechat.request.UseAccountRequest;
 import com.github.binarywang.demo.wechat.response.AccountListResponse;
 import com.github.binarywang.demo.wechat.response.AccountResponse;
 import com.github.binarywang.demo.wechat.response.GetCreateResponse;
 import com.github.binarywang.demo.wechat.response.IncomeInfo;
 import com.github.binarywang.demo.wechat.response.IndexResponse;
+import com.github.binarywang.demo.wechat.response.OrderInfo;
+import com.github.binarywang.demo.wechat.response.OrderListResponse;
 import com.github.binarywang.demo.wechat.response.UseAccountResponse;
 import com.github.binarywang.demo.wechat.service.MallDefinitionService;
 import com.github.binarywang.demo.wechat.service.MiniIncomeService;
+import com.github.binarywang.demo.wechat.service.MiniOrderService;
 import com.github.binarywang.demo.wechat.service.MiniUserService;
 import com.github.binarywang.demo.wechat.service.OrderAccountService;
 import com.github.binarywang.demo.wechat.utils.JsonUtils;
@@ -54,6 +60,8 @@ public class BuyerController {
 	private MallDefinitionService mallDefinitionService;
     @Autowired
 	private MiniUserService userService;
+    @Autowired
+	private MiniOrderService miniOrderService;
 
     /**
      * 首页
@@ -265,6 +273,44 @@ public class BuyerController {
 		buyerAccount.setStatus(String.valueOf(orderAccount.getStatus()));
         useAccountResponse.setAccount(buyerAccount);
         return JsonUtils.toJson(useAccountResponse);
+    }
+    
+    /**
+     * 订单列表
+     */
+    @PostMapping("orderManger")
+    public String orderManger(@RequestBody OrderListRequest orderListRequest) {
+        if (StringUtils.isBlank(orderListRequest.getHaihu_session())) {
+            return "empty session";
+        }
+        Long userId = Long.parseLong(ThreeDES.decryptMode(orderListRequest.getHaihu_session()));
+        Long mallId = Long.parseLong(orderListRequest.getMall_id());
+        String siteName = null;
+        Integer type = Integer.parseInt(orderListRequest.getType());
+        if(mallId>=0) {
+        		MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionById(mallId);
+        		siteName = mallDefinition.getName();
+        }
+        OrderListResponse orderListResponse = new OrderListResponse();
+        orderListResponse.setHaihu_session(orderListRequest.getHaihu_session());
+        orderListResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
+        orderListResponse.setUser_id(String.valueOf(userId));
+        List<MiniOrder> miniOrders = miniOrderService.getMiniOrderList(type, siteName, userId);
+        List<OrderInfo> order_list = new ArrayList<OrderInfo>();
+        for(MiniOrder m:miniOrders) {
+        		OrderInfo orderInfo = new OrderInfo();
+        		orderInfo.setCreate_time(String.valueOf(m.getGmtCreate().getTime()));
+        		orderInfo.setEnd_time(String.valueOf(m.getGmtCreate().getTime() + (30 * 60*1000)));
+        		//orderInfo.setGoods_list(goods_list);
+        		//orderInfo.setIncome(income);
+        		//orderInfo.setMall(mall);
+        		orderInfo.setOrder_id(String.valueOf(m.getId()));
+        		orderInfo.setOrder_no(m.getOrderNo());
+        		//orderInfo.set
+        		order_list.add(orderInfo);
+        }
+        orderListResponse.setOrder_list(order_list);
+        return JsonUtils.toJson(orderListResponse);
     }
 
 
