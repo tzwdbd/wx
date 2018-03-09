@@ -36,4 +36,7 @@ public interface MiniUserMapper {
 	
 	@Update("UPDATE oversea.mini_users SET mail = #{mail} WHERE id = #{id}")
 	public int updateMail(@Param("id") Long id, @Param("mail") String mail);
+	
+	@Select("SELECT * FROM oversea.mini_users WHERE open_id = #{openId} limit 1")
+	MiniUser getUserByOpenId(@Param("openId")String openId);
 }

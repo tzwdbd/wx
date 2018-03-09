@@ -76,4 +76,9 @@ public class MiniUserServiceImpl implements MiniUserService {
 		return userMapper.updateMail(id, mail);
 	}
 
+	@Override
+	public MiniUser getUserByOpenId(String openId) {
+		return userMapper.getUserByOpenId(openId);
+	}
+
 }
