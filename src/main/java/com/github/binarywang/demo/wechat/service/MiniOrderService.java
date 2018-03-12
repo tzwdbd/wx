@@ -14,7 +14,7 @@ public interface MiniOrderService {
 	
 	public int updateMiniOrderByOrder(String orderNO, Integer fromStatus,Integer toStatus);
 	
-	MiniOrder getOrderDetailByOrderNoAndSkuId(String orderNo,Long productEntityId);
+	MiniOrder getOrderDetailByOrderNoAndSkuId(String orderNo,Long productEntityId,Long userId);
 	
 	public int updateMiniOrderById(Long id, Integer fromStatus,Integer toStatus);
 }

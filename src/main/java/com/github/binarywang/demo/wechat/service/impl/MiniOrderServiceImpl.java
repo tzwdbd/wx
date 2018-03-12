@@ -60,8 +60,8 @@ public class MiniOrderServiceImpl implements MiniOrderService {
 	}
 
 	@Override
-	public MiniOrder getOrderDetailByOrderNoAndSkuId(String orderNo, Long productEntityId) {
-		return miniOrderMapper.getOrderDetailByOrderNoAndSkuId(orderNo, productEntityId);
+	public MiniOrder getOrderDetailByOrderNoAndSkuId(String orderNo, Long productEntityId,Long userId) {
+		return miniOrderMapper.getOrderDetailByOrderNoAndSkuId(orderNo, productEntityId,userId);
 	}
 
 	@Override

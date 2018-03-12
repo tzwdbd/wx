@@ -308,7 +308,7 @@ public class BuyerController {
         for(MiniOrder m:miniOrders) {
         		if(!orders.contains(m.getOrderNo())) {
         			List<OrderDetail> orderDetails = orderDetailService.getOrderDetailList(m.getOrderNo());
-        			OrderInfo orderInfo = getOrderInfo(orderDetails);
+        			OrderInfo orderInfo = getOrderInfo(orderDetails,userId);
 	        		orderList.add(orderInfo);
 	        		orders.add(m.getOrderNo());
         		}
@@ -330,7 +330,7 @@ public class BuyerController {
         Long userId = Long.parseLong(ThreeDES.decryptMode(orderDetailRequest.getHaihu_session()));
         String orderNo = orderDetailRequest.getOrder_no();
         List<OrderDetail> orderDetails = orderDetailService.getOrderDetailList(orderNo);
-        OrderInfo orderInfo = getOrderInfo(orderDetails);
+        OrderInfo orderInfo = getOrderInfo(orderDetails,userId);
         OrderDetailResponse orderDetailResponse = new OrderDetailResponse();
         orderDetailResponse.setHaihu_session(orderDetailRequest.getHaihu_session());
         orderDetailResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
@@ -409,7 +409,7 @@ public class BuyerController {
         List<OrderDetail> orderDetails = orderDetailService.getOrderDetailByExpressList(expressNo);
         if(orderDetails!=null && orderDetails.size()>0) {
         		for(OrderDetail orderDetail:orderDetails) {
-        			MiniOrder miniOrder = miniOrderService.getOrderDetailByOrderNoAndSkuId(orderDetail.getOrderNo(), orderDetail.getProductEntityId());
+        			MiniOrder miniOrder = miniOrderService.getOrderDetailByOrderNoAndSkuId(orderDetail.getOrderNo(), orderDetail.getProductEntityId(),userId);
         			if(miniOrder!=null) {
         				int num = miniOrderService.updateMiniOrderById(miniOrder.getId(), 3, 6);
         				if(num>0) {
@@ -528,7 +528,7 @@ public class BuyerController {
         return str;
     }
     
-    OrderInfo getOrderInfo(List<OrderDetail> orderDetails){
+    OrderInfo getOrderInfo(List<OrderDetail> orderDetails,Long userId){
     		OrderInfo orderInfo = new OrderInfo();
 		orderInfo.setCreate_time(String.valueOf(orderDetails.get(0).getGmtCreate().getTime()));
 		orderInfo.setEnd_time(String.valueOf(orderDetails.get(0).getGmtCreate().getTime() + (30 * 60*1000)));
@@ -543,8 +543,8 @@ public class BuyerController {
 			buyerGoods.setImg("img.haihu.com/"+img);
 			String name = productMapper.getProductName(orderDetail.getProductId());
 			buyerGoods.setMall_price(orderDetail.getMyPrice());
-			/*TODO*/
-			//buyerGoods.setStatus(status);
+			String status = orderDetailService.getStatus(orderDetail, userId);
+			buyerGoods.setStatus(status);
 			buyerGoods.setNumber(String.valueOf(orderDetail.getNum()));
 			buyerGoods.setSeq(String.valueOf(orderDetail.getProductEntityId()));
 			if(!StringUtils.isBlank(orderDetail.getProductSku())) {
@@ -555,8 +555,7 @@ public class BuyerController {
 				BuyerPackage buyerPackage = new BuyerPackage();
 				packageGoodsList.add(buyerGoods);
 				buyerPackage.setGoods_list(packageGoodsList);
-				/*TODO*/
-				//buyerPackage.setStatus(status);
+				buyerPackage.setStatus(status);
 				buyerPackage.setExpress_no(orderDetail.getExpressNo());
 				packageList.add(buyerPackage);
 			}else {
@@ -578,8 +577,8 @@ public class BuyerController {
 		}
 		
 		orderInfo.setRmb_price(String.valueOf(rmbPrice));
-		/*TODO*/
-		//orderInfo.setStatus(String.valueOf(m.getStatus()));
+		String status = orderDetailService.getStatus(orderDetails, userId);
+		orderInfo.setStatus(String.valueOf(status));
 		orderInfo.setTotal_price(String.valueOf(myPrice));
 		return orderInfo;
     }

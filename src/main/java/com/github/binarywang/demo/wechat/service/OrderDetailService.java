@@ -13,5 +13,8 @@ public interface OrderDetailService {
 	List<OrderDetail> getOrderDetailList(String orderNo);
 	
 	List<OrderDetail> getOrderDetailByExpressList(String expressNo);
+	
+	String getStatus(OrderDetail orderDetail,Long userId);
+	String getStatus(List<OrderDetail> orderDetails,Long userId);
 
 }
