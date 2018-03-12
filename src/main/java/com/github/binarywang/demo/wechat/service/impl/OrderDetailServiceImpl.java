@@ -76,7 +76,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 
 	@Override
 	public String getStatus(List<OrderDetail> orderDetails, Long userId) {
-		int  status= 7;
+		int  status= 14;
 		for(OrderDetail orderDetail:orderDetails) {
 			MiniOrder miniOrder = miniOrderService.getOrderDetailByOrderNoAndSkuId(orderDetail.getOrderNo(), orderDetail.getProductEntityId(),userId);
 			int tostatus = 0;
@@ -101,6 +101,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 					Integer expressStatus = userTradeExpressMapper.getUserTradeExpressByOrderNo(orderDetail.getOrderNo());
 					if(expressStatus!=null && expressStatus>3) {
 						tostatus = 7;
+						if(expressStatus==14) {
+							tostatus = 14;
+						}
 					}
 				}
 			}

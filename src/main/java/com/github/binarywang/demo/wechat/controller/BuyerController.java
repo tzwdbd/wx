@@ -346,27 +346,41 @@ public class BuyerController {
 		buyerAccount.setMall(mall);
 		buyerAccount.setStatus(String.valueOf(orderAccount.getStatus()));
         orderDetailResponse.setAccount(buyerAccount);
-        /*TODO*/
+        String status = orderDetailService.getStatus(orderDetails, userId);
         List<BuyerExpressNode> expressNodeList = new ArrayList<BuyerExpressNode>();
     		BuyerExpressNode buyerExpressNode1 = new BuyerExpressNode();
     		buyerExpressNode1.setCode("3");
     		buyerExpressNode1.setDisplay("商城发货");
     		buyerExpressNode1.setStatus("1");
+    		if(Integer.parseInt(status)>=4) {
+    			buyerExpressNode1.setStatus("0");
+    		}
+    		
     		expressNodeList.add(buyerExpressNode1);
     		BuyerExpressNode buyerExpressNode2 = new BuyerExpressNode();
     		buyerExpressNode2.setCode("4");
     		buyerExpressNode2.setDisplay("确认签收");
     		buyerExpressNode2.setStatus("1");
+    		if(Integer.parseInt(status)>=6) {
+    			buyerExpressNode2.setStatus("0");
+    		}
+    		
     		expressNodeList.add(buyerExpressNode2);
     		BuyerExpressNode buyerExpressNode3 = new BuyerExpressNode();
     		buyerExpressNode3.setCode("5");
     		buyerExpressNode3.setDisplay("中转仓出库");
     		buyerExpressNode3.setStatus("1");
+    		if(Integer.parseInt(status)>=7) {
+    			buyerExpressNode3.setStatus("0");
+    		}
     		expressNodeList.add(buyerExpressNode3);
     		BuyerExpressNode buyerExpressNode4 = new BuyerExpressNode();
     		buyerExpressNode4.setCode("6");
     		buyerExpressNode4.setDisplay("用户签收");
     		buyerExpressNode4.setStatus("1");
+    		if(Integer.parseInt(status)==14) {
+    			buyerExpressNode3.setStatus("0");
+    		}
     		expressNodeList.add(buyerExpressNode4);
         orderDetailResponse.setExpress_node_list(expressNodeList);
         return JsonUtils.toJson(orderDetailResponse);
