@@ -42,11 +42,6 @@ public class MiniUserServiceImpl implements MiniUserService {
 	}
 
 	@Override
-	public int delete(Integer id) {
-		return userMapper.delete(id);
-	}
-
-	@Override
 	public MiniUser addUser(WxMaUserInfo userInfo, SystemInfo systemInfo) {
 		//保存用户
 		MiniUser user = new MiniUser();

@@ -1,6 +1,7 @@
 package com.github.binarywang.demo.wechat.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -12,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.binarywang.demo.wechat.bean.MiniIncome;
 import com.github.binarywang.demo.wechat.bean.MiniUser;
 import com.github.binarywang.demo.wechat.exception.ProcessStatusCode;
 import com.github.binarywang.demo.wechat.request.LoginRequest;
 import com.github.binarywang.demo.wechat.request.SystemInfo;
 import com.github.binarywang.demo.wechat.request.WechatInfo;
 import com.github.binarywang.demo.wechat.response.LoginResponse;
+import com.github.binarywang.demo.wechat.service.MiniIncomeService;
 import com.github.binarywang.demo.wechat.service.MiniUserService;
 import com.github.binarywang.demo.wechat.utils.JsonUtils;
 import com.github.binarywang.demo.wechat.utils.ThreeDES;
@@ -41,6 +44,8 @@ public class WxMaUserController {
     private WxMaService wxService;
     @Autowired
 	private MiniUserService userService;
+    @Autowired
+    private MiniIncomeService miniIncomeService;
 
     /**
      * 登陆接口
@@ -69,6 +74,15 @@ public class WxMaUserController {
             MiniUser user = userService.getUserByOpenId(session.getOpenid());
             if(user==null) {
             		user = userService.addUser(userInfo, systemInfo);
+            		MiniIncome miniIncome = new MiniIncome();
+            		miniIncome.setAlreadyPresented(0);
+            		miniIncome.setCanPresented(0);
+            		miniIncome.setDeduct(0);
+            		miniIncome.setExpectPresented(0);
+            		miniIncome.setMiniUserId(user.getId());
+            		miniIncome.setGmtCreate(new Date());
+            		miniIncome.setGmtMmodified(new Date());
+            		miniIncomeService.add(miniIncome);
             }
     			LoginResponse loginResponse = new LoginResponse();
     			loginResponse.setUser_info(userInfo);

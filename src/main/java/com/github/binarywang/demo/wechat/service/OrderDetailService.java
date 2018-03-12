@@ -11,5 +11,7 @@ public interface OrderDetailService {
 	OrderDetail getOrderDetailByOrderNoAndSkuId(String orderNo,Long productEntityId);
 	
 	List<OrderDetail> getOrderDetailList(String orderNo);
+	
+	List<OrderDetail> getOrderDetailByExpressList(String expressNo);
 
 }

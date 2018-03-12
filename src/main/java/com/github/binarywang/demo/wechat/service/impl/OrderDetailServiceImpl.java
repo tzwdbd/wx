@@ -27,6 +27,11 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		return orderDetailMapper.getOrderDetailList(orderNo);
 	}
 
+	@Override
+	public List<OrderDetail> getOrderDetailByExpressList(String expressNo) {
+		return orderDetailMapper.getOrderDetailByExpressList(expressNo);
+	}
+
 
 
 }

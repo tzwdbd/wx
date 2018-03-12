@@ -38,4 +38,10 @@ public interface MiniOrderMapper {
 	@Update("UPDATE oversea.mini_order SET status = #{toStatus}  WHERE order_no = #{orderNo} and status =#{fromStatus}")
 	public int updateMiniOrderByOrder(@Param("orderNo") String orderNo, @Param("fromStatus") Integer fromStatus,@Param("toStatus") Integer toStatus);
 	
+	@Select("SELECT * FROM oversea.mini_order WHERE order_no = #{orderNo} and product_entity_id = #{productEntityId} limit 1")
+	public MiniOrder getOrderDetailByOrderNoAndSkuId(String orderNo, Long productEntityId) ;
+	
+	@Update("UPDATE oversea.mini_order SET status = #{toStatus}  WHERE id = #{id} and status =#{fromStatus}")
+	public int updateMiniOrderById(Long id, Integer fromStatus,Integer toStatus);
+	
 }

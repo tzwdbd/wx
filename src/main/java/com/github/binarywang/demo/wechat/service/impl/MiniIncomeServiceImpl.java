@@ -35,20 +35,8 @@ public class MiniIncomeServiceImpl implements MiniIncomeService {
 	}
 
 	@Override
-	public int update(Integer id, MiniUser user) {
-		return miniIncomeMapper.update(id, user);
-	}
-
-	@Override
-	public int delete(Integer id) {
-		return miniIncomeMapper.delete(id);
-	}
-
-	@Override
-	public MiniIncome addUser(WxMaUserInfo userInfo, SystemInfo systemInfo) {
-		//保存用户
-		MiniIncome miniIncome = new MiniIncome();
-		return miniIncome;
+	public int updateExpectPresented(Long miniUserId, Integer expectPresented) {
+		return miniIncomeMapper.updateExpectPresented(miniUserId, expectPresented);
 	}
 
 }

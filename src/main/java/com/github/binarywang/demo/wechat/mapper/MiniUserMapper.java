@@ -24,15 +24,12 @@ public interface MiniUserMapper {
 	@SelectProvider(type=SqlProvider.class,method="selectUser")  
 	public List<MiniUser> getUserList(MiniUser user);
 	
-	@Insert("insert into oversea.mini_users(nick_name, status) values(#{nickName}, #{status})")
+	@Insert("insert into oversea.mini_users(nick_name, status,open_id,language,gender,city,province,country,avatar_url,gmt_create,gmt_modified,weixin_unionid,wechat_version,brand,model,screen_width,screen_height,system,platform,mail) values(#{nickName}, #{status},#{openId},#{language},#{gender},#{city},#{province},#{country},#{avatarUrl},now(),now(),#{weixinUnionid},#{wechatVersion},#{brand},#{model},#{screenWidth},#{screenHeight},#{system},#{platform},#{mail}")
 	@Options(useGeneratedKeys=true,keyProperty="id")
 	public int add(MiniUser user);
 
 	@Update("UPDATE oversea.mini_users SET username = #{user.username} , age = #{user.age} WHERE id = #{id}")
 	public int update(@Param("id") Integer id, @Param("user") MiniUser user);
-
-	@Delete("DELETE from oversea.mini_users where id = #{id} ")
-	public int delete(Integer id);
 	
 	@Update("UPDATE oversea.mini_users SET mail = #{mail} WHERE id = #{id}")
 	public int updateMail(@Param("id") Long id, @Param("mail") String mail);

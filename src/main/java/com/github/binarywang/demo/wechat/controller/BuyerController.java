@@ -23,6 +23,7 @@ import com.github.binarywang.demo.wechat.exception.ProcessStatusCode;
 import com.github.binarywang.demo.wechat.mapper.ProductMapper;
 import com.github.binarywang.demo.wechat.request.AccountListRequest;
 import com.github.binarywang.demo.wechat.request.BuyerAccount;
+import com.github.binarywang.demo.wechat.request.ConfirmCodeRequest;
 import com.github.binarywang.demo.wechat.request.Mall;
 import com.github.binarywang.demo.wechat.request.OperationRequest;
 import com.github.binarywang.demo.wechat.request.OrderDetailRequest;
@@ -34,6 +35,7 @@ import com.github.binarywang.demo.wechat.response.BuyerExpressNode;
 import com.github.binarywang.demo.wechat.response.BuyerGoods;
 import com.github.binarywang.demo.wechat.response.BuyerPackage;
 import com.github.binarywang.demo.wechat.response.ConfirmAuthResponse;
+import com.github.binarywang.demo.wechat.response.ConfirmCodeResponse;
 import com.github.binarywang.demo.wechat.response.GetCreateResponse;
 import com.github.binarywang.demo.wechat.response.IncomeInfo;
 import com.github.binarywang.demo.wechat.response.IndexResponse;
@@ -375,6 +377,41 @@ public class BuyerController {
         confirmAuthResponse.setStatus(status);
         confirmAuthResponse.setUser_id(String.valueOf(userId));
         return JsonUtils.toJson(confirmAuthResponse);
+    }
+    
+    /**
+     * 确认收货
+     */
+    @PostMapping("confirmCode")
+    public String confirmCode(@RequestBody ConfirmCodeRequest ConfirmCodeRequest) {
+        if (StringUtils.isBlank(ConfirmCodeRequest.getHaihu_session())) {
+            return "empty session";
+        }
+        Long userId = Long.parseLong(ThreeDES.decryptMode(ConfirmCodeRequest.getHaihu_session()));
+        String expressNo = ConfirmCodeRequest.getExpress_no();
+        ConfirmCodeResponse confirmCodeResponse = new ConfirmCodeResponse();
+        String success =ProcessStatusCode.PROCESS_FAIL.getCode();
+        List<OrderDetail> orderDetails = orderDetailService.getOrderDetailByExpressList(expressNo);
+        if(orderDetails!=null && orderDetails.size()>0) {
+        		for(OrderDetail orderDetail:orderDetails) {
+        			MiniOrder miniOrder = miniOrderService.getOrderDetailByOrderNoAndSkuId(orderDetail.getOrderNo(), orderDetail.getProductEntityId());
+        			if(miniOrder!=null) {
+        				int num = miniOrderService.updateMiniOrderById(miniOrder.getId(), 3, 6);
+        				if(num>0) {
+        					success=ProcessStatusCode.PROCESS_SUCCESS.getCode();
+        				}
+        			}
+        		}
+        }
+      //算收益
+        if(success.equals(ProcessStatusCode.PROCESS_SUCCESS.getCode())) {
+			miniIncomeService.updateExpectPresented(userId, 5);
+        }
+        confirmCodeResponse.setHaihu_session(ConfirmCodeRequest.getHaihu_session());
+        confirmCodeResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
+        confirmCodeResponse.setUser_id(String.valueOf(userId));
+        confirmCodeResponse.setSuccess(success);
+        return JsonUtils.toJson(confirmCodeResponse);
     }
     
     public static String getSku(String value) {

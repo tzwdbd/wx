@@ -20,16 +20,14 @@ import com.github.binarywang.demo.wechat.provider.SqlProvider;
 public interface MiniIncomeMapper {
 
 	@Select("SELECT * FROM oversea.mini_income WHERE mini_user_id = #{miniUserId} limit 1")
-	MiniIncome getMiniIncomeByUserId(Long userId);
+	MiniIncome getMiniIncomeByUserId(@Param("miniUserId")  Long userId);
 
-	@Insert("insert into oversea.mini_income(mini_user_id, expect_presented) values(#{miniUserId}, #{expectPSresented})")
+	@Insert("insert into oversea.mini_income(mini_user_id, expect_presented,can_presented,already_presented,deduct,gmt_create,gmt_modified) values(#{miniUserId}, 0, 0, 0,0, now(),now()")
 	@Options(useGeneratedKeys=true,keyProperty="id")
 	public int add(MiniIncome miniIncome);
 
-	@Update("UPDATE oversea.mini_income SET username = #{user.username} , age = #{user.age} WHERE id = #{id}")
-	public int update(@Param("id") Integer id, @Param("user") MiniUser user);
+	@Update("UPDATE oversea.mini_income SET expect_presented = #{expectPresented} WHERE mini_user_id = #{miniUserId}")
+	public int updateExpectPresented(@Param("miniUserId") Long miniUserId,Integer expectPresented);
 
-	@Delete("DELETE from oversea.mini_income where id = #{id} ")
-	public int delete(Integer id);
 
 }

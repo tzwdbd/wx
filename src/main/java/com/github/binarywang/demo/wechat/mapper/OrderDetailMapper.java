@@ -16,4 +16,7 @@ public interface OrderDetailMapper {
 	@Select("SELECT * FROM automan.order_detail WHERE order_no = #{orderNo} and product_entity_id = #{productEntityId} limit 1")
 	OrderDetail getOrderDetailByOrderNoAndSkuId(String orderNo,Long productEntityId);
 	
+	@Select("SELECT * FROM automan.order_detail WHERE express_no = #{expressNo}")
+	List<OrderDetail> getOrderDetailByExpressList(String expressNo);
+	
 }
