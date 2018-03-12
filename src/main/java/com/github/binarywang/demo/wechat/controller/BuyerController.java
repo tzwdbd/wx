@@ -1,7 +1,9 @@
 package com.github.binarywang.demo.wechat.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,17 +15,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.binarywang.demo.wechat.bean.AlipayTradeMoney;
 import com.github.binarywang.demo.wechat.bean.MallDefinition;
 import com.github.binarywang.demo.wechat.bean.MiniIncome;
+import com.github.binarywang.demo.wechat.bean.MiniIncomeDetail;
 import com.github.binarywang.demo.wechat.bean.MiniOrder;
 import com.github.binarywang.demo.wechat.bean.MiniUser;
 import com.github.binarywang.demo.wechat.bean.OrderAccount;
 import com.github.binarywang.demo.wechat.bean.OrderDetail;
 import com.github.binarywang.demo.wechat.exception.ProcessStatusCode;
+import com.github.binarywang.demo.wechat.mapper.AlipayTradeMoneyMapper;
 import com.github.binarywang.demo.wechat.mapper.ProductMapper;
 import com.github.binarywang.demo.wechat.request.AccountListRequest;
+import com.github.binarywang.demo.wechat.request.ApplyCashRequest;
 import com.github.binarywang.demo.wechat.request.BuyerAccount;
 import com.github.binarywang.demo.wechat.request.ConfirmCodeRequest;
+import com.github.binarywang.demo.wechat.request.IncomeDetailRequest;
 import com.github.binarywang.demo.wechat.request.Mall;
 import com.github.binarywang.demo.wechat.request.OperationRequest;
 import com.github.binarywang.demo.wechat.request.OrderDetailRequest;
@@ -31,12 +38,15 @@ import com.github.binarywang.demo.wechat.request.OrderListRequest;
 import com.github.binarywang.demo.wechat.request.UseAccountRequest;
 import com.github.binarywang.demo.wechat.response.AccountListResponse;
 import com.github.binarywang.demo.wechat.response.AccountResponse;
+import com.github.binarywang.demo.wechat.response.ApplyCashResponse;
 import com.github.binarywang.demo.wechat.response.BuyerExpressNode;
 import com.github.binarywang.demo.wechat.response.BuyerGoods;
 import com.github.binarywang.demo.wechat.response.BuyerPackage;
 import com.github.binarywang.demo.wechat.response.ConfirmAuthResponse;
 import com.github.binarywang.demo.wechat.response.ConfirmCodeResponse;
 import com.github.binarywang.demo.wechat.response.GetCreateResponse;
+import com.github.binarywang.demo.wechat.response.IncomeDetailInfo;
+import com.github.binarywang.demo.wechat.response.IncomeDetailResponse;
 import com.github.binarywang.demo.wechat.response.IncomeInfo;
 import com.github.binarywang.demo.wechat.response.IndexResponse;
 import com.github.binarywang.demo.wechat.response.OrderDetailResponse;
@@ -44,6 +54,7 @@ import com.github.binarywang.demo.wechat.response.OrderInfo;
 import com.github.binarywang.demo.wechat.response.OrderListResponse;
 import com.github.binarywang.demo.wechat.response.UseAccountResponse;
 import com.github.binarywang.demo.wechat.service.MallDefinitionService;
+import com.github.binarywang.demo.wechat.service.MiniIncomeDetailService;
 import com.github.binarywang.demo.wechat.service.MiniIncomeService;
 import com.github.binarywang.demo.wechat.service.MiniOrderService;
 import com.github.binarywang.demo.wechat.service.MiniUserService;
@@ -77,6 +88,10 @@ public class BuyerController {
     private OrderDetailService orderDetailService;
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private MiniIncomeDetailService miniIncomeDetailService;
+    @Autowired
+    private AlipayTradeMoneyMapper alipayTradeMoneyMapper;
 
     /**
      * 首页
@@ -406,12 +421,92 @@ public class BuyerController {
       //算收益
         if(success.equals(ProcessStatusCode.PROCESS_SUCCESS.getCode())) {
 			miniIncomeService.updateExpectPresented(userId, 5);
+			MiniIncomeDetail miniIncomeDetail = new MiniIncomeDetail();
+			miniIncomeDetail.setIncome("5");
+			miniIncomeDetail.setMiniUserId(userId);
+			miniIncomeDetail.setOrder_no(orderDetails.get(0).getOrderNo());
+			miniIncomeDetail.setTitle(orderDetails.get(0).getSiteName());
+			miniIncomeDetail.setType(1);
+			miniIncomeDetailService.add(miniIncomeDetail);
         }
         confirmCodeResponse.setHaihu_session(ConfirmCodeRequest.getHaihu_session());
         confirmCodeResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
         confirmCodeResponse.setUser_id(String.valueOf(userId));
         confirmCodeResponse.setSuccess(success);
         return JsonUtils.toJson(confirmCodeResponse);
+    }
+    
+    /**
+     * 买手收益明细
+     */
+    @PostMapping("incomeDetails")
+    public String incomeDetails(@RequestBody IncomeDetailRequest incomeDetailRequest) {
+        if (StringUtils.isBlank(incomeDetailRequest.getHaihu_session())) {
+            return "empty session";
+        }
+        Long userId = Long.parseLong(ThreeDES.decryptMode(incomeDetailRequest.getHaihu_session()));
+        Integer pageNo = Integer.parseInt(incomeDetailRequest.getPage_no());
+        Integer pageSize = Integer.parseInt(incomeDetailRequest.getPage_size());
+        IncomeDetailResponse incomeDetailResponse = new IncomeDetailResponse();
+        incomeDetailResponse.setHaihu_session(incomeDetailRequest.getHaihu_session());
+        incomeDetailResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
+        incomeDetailResponse.setUser_id(String.valueOf(userId));
+        incomeDetailResponse.setPage_no(incomeDetailRequest.getPage_no());
+        incomeDetailResponse.setPage_size(incomeDetailRequest.getPage_size());
+        List<MiniIncomeDetail>  miniIncomeDetails = miniIncomeDetailService.getMiniIncomeDetailByUserId(userId, pageNo, pageSize);
+        List<IncomeDetailInfo> incomeDetailInfos = new ArrayList<IncomeDetailInfo>();
+        for(MiniIncomeDetail miniIncomeDetail:miniIncomeDetails) {
+        		IncomeDetailInfo incomeDetailInfo = new IncomeDetailInfo();
+        		incomeDetailInfo.setDate(String.valueOf(miniIncomeDetail.getGmtMmodified().getTime()));
+        		incomeDetailInfo.setIncome(miniIncomeDetail.getIncome());
+        		incomeDetailInfo.setOrder_no(miniIncomeDetail.getOrder_no());
+        		incomeDetailInfo.setTitle(miniIncomeDetail.getTitle());
+        		incomeDetailInfo.setType(String.valueOf(miniIncomeDetail.getType()));
+        		incomeDetailInfos.add(incomeDetailInfo);
+        }
+        incomeDetailResponse.setIncome_detail_list(incomeDetailInfos);
+        return JsonUtils.toJson(incomeDetailResponse);
+    }
+    
+    /**
+     * 提现申请
+     */
+    @PostMapping("applyCash")
+    public String applyCash(@RequestBody ApplyCashRequest applyCashRequest) {
+        if (StringUtils.isBlank(applyCashRequest.getHaihu_session())) {
+            return "empty session";
+        }
+        Long userId = Long.parseLong(ThreeDES.decryptMode(applyCashRequest.getHaihu_session()));
+        String alipay = applyCashRequest.getAlipay();
+        String amount = applyCashRequest.getCash_amount();
+        String name = applyCashRequest.getReally_name();
+        String type = applyCashRequest.getType();
+        MiniIncome miniIncome = miniIncomeService.getMiniIncomeByUserId(userId);
+        BigDecimal fen =  new BigDecimal(amount).multiply(new BigDecimal("100"));
+        int coupon = fen.intValue();
+        ApplyCashResponse applyCashResponse = new ApplyCashResponse();
+        if(miniIncome.getCanPresented()>=coupon) {
+        		int num = miniIncomeService.updateCanPresented(userId, coupon);
+        		if(num>0) {
+	        		AlipayTradeMoney alipayTradeMoney = new AlipayTradeMoney();
+	            alipayTradeMoney.setAlipayAccount(alipay);
+	            alipayTradeMoney.setRealName(name);
+	            alipayTradeMoney.setGmtCreate(new Date());
+	            alipayTradeMoney.setGmtMmodified(new Date());
+	            alipayTradeMoney.setType(2);
+	            alipayTradeMoney.setUser_id(userId);;
+	            alipayTradeMoneyMapper.add(alipayTradeMoney);
+	           
+	            applyCashResponse.setHaihu_session(applyCashRequest.getHaihu_session());
+	            applyCashResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
+	            applyCashResponse.setUser_id(String.valueOf(userId));
+	            applyCashResponse.setDesc("提现成功");
+        		}
+        }else {
+        		applyCashResponse.setDesc("提现金额超过可提现数");
+        }
+        
+        return JsonUtils.toJson(applyCashResponse);
     }
     
     public static String getSku(String value) {

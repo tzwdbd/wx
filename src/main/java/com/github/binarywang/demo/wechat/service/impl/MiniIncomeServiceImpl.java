@@ -39,4 +39,14 @@ public class MiniIncomeServiceImpl implements MiniIncomeService {
 		return miniIncomeMapper.updateExpectPresented(miniUserId, expectPresented);
 	}
 
+	@Override
+	public int updateCanPresented(Long miniUserId, Integer canPresented) {
+		return miniIncomeMapper.updateCanPresented(miniUserId, canPresented);
+	}
+
+	@Override
+	public int updateAlreadyPresented(Long miniUserId, Integer alreadyPresented) {
+		return miniIncomeMapper.updateAlreadyPresented(miniUserId, alreadyPresented);
+	}
+
 }

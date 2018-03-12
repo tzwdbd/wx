@@ -11,5 +11,9 @@ public interface MiniIncomeService {
 	public int add(MiniIncome miniIncome);
 
 	public int updateExpectPresented(Long miniUserId,Integer expectPresented);
+	
+	public int updateCanPresented(Long miniUserId,Integer canPresented);
+	
+	public int updateAlreadyPresented(Long miniUserId,Integer alreadyPresented);
 
 }
