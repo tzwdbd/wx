@@ -33,6 +33,7 @@ import com.github.binarywang.demo.wechat.response.AccountResponse;
 import com.github.binarywang.demo.wechat.response.BuyerExpressNode;
 import com.github.binarywang.demo.wechat.response.BuyerGoods;
 import com.github.binarywang.demo.wechat.response.BuyerPackage;
+import com.github.binarywang.demo.wechat.response.ConfirmAuthResponse;
 import com.github.binarywang.demo.wechat.response.GetCreateResponse;
 import com.github.binarywang.demo.wechat.response.IncomeInfo;
 import com.github.binarywang.demo.wechat.response.IndexResponse;
@@ -352,6 +353,28 @@ public class BuyerController {
     		expressNodeList.add(buyerExpressNode4);
         orderDetailResponse.setExpress_node_list(expressNodeList);
         return JsonUtils.toJson(orderDetailResponse);
+    }
+    
+    /**
+     * 确认授权订单
+     */
+    @PostMapping("confirmAuth")
+    public String confirmAuth(@RequestBody OrderDetailRequest orderDetailRequest) {
+        if (StringUtils.isBlank(orderDetailRequest.getHaihu_session())) {
+            return "empty session";
+        }
+        Long userId = Long.parseLong(ThreeDES.decryptMode(orderDetailRequest.getHaihu_session()));
+        String orderNo = orderDetailRequest.getOrder_no();
+        ConfirmAuthResponse confirmAuthResponse = new ConfirmAuthResponse();
+        String status =ProcessStatusCode.PROCESS_FAIL.getCode();
+        int num = miniOrderService.updateMiniOrderByOrder(orderNo, 0, 3);
+        if(num>0) {
+        		status=ProcessStatusCode.PROCESS_SUCCESS.getCode();
+        }
+        confirmAuthResponse.setHaihu_session(orderDetailRequest.getHaihu_session());
+        confirmAuthResponse.setStatus(status);
+        confirmAuthResponse.setUser_id(String.valueOf(userId));
+        return JsonUtils.toJson(confirmAuthResponse);
     }
     
     public static String getSku(String value) {

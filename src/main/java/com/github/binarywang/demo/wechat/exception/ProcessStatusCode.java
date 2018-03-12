@@ -3,7 +3,8 @@ package com.github.binarywang.demo.wechat.exception;
 
 public enum ProcessStatusCode {
 
-	PROCESS_SUCCESS("100","处理成功");
+	PROCESS_SUCCESS("100","处理成功"),
+	PROCESS_FAIL("-1","处理失败");
 	
 	private final String code;
     private final String codeMessage;
