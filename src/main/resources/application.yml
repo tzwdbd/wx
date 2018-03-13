@@ -6,8 +6,8 @@ logging:
 
 wechat:
   miniapp:
-    appid: 111
-    secret: 111
+    appid: wx84cc48c8ddcf5e08
+    secret: 3d2697cd7118d4278c71759a3d992c34
     token: 111
     aesKey: 111
     msgDataFormat: JSON
