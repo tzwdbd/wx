@@ -82,4 +82,19 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+            <archive>
+                <manifest>
+                    <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                    <addClasspath>true</addClasspath>
+                    <classpathPrefix>lib/</classpathPrefix>
+                    <mainClass>com.github.binarywang.demo.wechat.WxMaDemoApplication</mainClass>
+                </manifest>
+            </archive>
+        </configuration>
+    </plugin>
 </project>
