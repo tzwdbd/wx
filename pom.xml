@@ -11,7 +11,7 @@
 
     <groupId>com.github.binarywang</groupId>
     <version>1.0.0-SNAPSHOT</version>
-    <artifactId>weixin-miniapps</artifactId>
+    <artifactId>weixin-miniapp</artifactId>
     <packaging>jar</packaging>
 
     <name>spring-boot-demo-for-wechat-miniapp</name>
