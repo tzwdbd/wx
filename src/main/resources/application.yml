@@ -19,3 +19,5 @@ spring:
     password: dev@)#)
 mybatis:
   type-aliases-package: com.github.binarywang.demo.wechat.bean
+  configuration:
+    map-underscore-to-camel-case: true
