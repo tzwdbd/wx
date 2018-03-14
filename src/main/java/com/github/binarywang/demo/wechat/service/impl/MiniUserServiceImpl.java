@@ -52,7 +52,7 @@ public class MiniUserServiceImpl implements MiniUserService {
 		user.setCountry(userInfo.getCountry());
 		user.setGender(userInfo.getGender());
 		user.setGmtCreate(new Date());
-		user.setGmtMmodified(new Date());
+		user.setGmtModified(new Date());
 		user.setLanguage(userInfo.getLanguage());
 		user.setModel(systemInfo.getModel());
 		user.setNickName(userInfo.getNickName());
