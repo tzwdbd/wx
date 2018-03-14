@@ -1,5 +1,6 @@
 package com.github.binarywang.demo.wechat.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.github.binarywang.demo.wechat.bean.MiniOrder;
@@ -8,7 +9,7 @@ import com.github.binarywang.demo.wechat.bean.MiniOrder;
  */
 public interface MiniOrderService {
 	
-	List<MiniOrder> getMiniOrderList(Integer type,String siteName,Long userId);
+	List<MiniOrder> getMiniOrderList(Integer type,String siteName,Long userId,Date time,Integer pageSize);
 
 	public int updateStatus(Long id, Integer status);
 	

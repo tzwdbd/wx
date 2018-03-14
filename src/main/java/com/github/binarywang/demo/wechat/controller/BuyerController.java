@@ -115,7 +115,7 @@ public class BuyerController {
         	income.setExpect_presented(String.valueOf(miniIncome.getExpectPresented()));
         	income.setAmount(String.valueOf(miniIncome.getAlreadyPresented()+miniIncome.getCanPresented()+miniIncome.getExpectPresented()-miniIncome.getDeduct()));
         	indexResponse.setIncome(income);
-        	List<MiniOrder> miniOrders = miniOrderService.getMiniOrderList(1, null, userId);
+        	List<MiniOrder> miniOrders = miniOrderService.getMiniOrderList(1, null, userId,null,null);
         	indexResponse.setUnauth_num(String.valueOf(miniOrders.size()));
         return JsonUtils.toJson(indexResponse);
     }
@@ -292,6 +292,15 @@ public class BuyerController {
         }
         Long userId = Long.parseLong(ThreeDES.decryptMode(orderListRequest.getHaihu_session()));
         Long mallId = Long.parseLong(orderListRequest.getMall_id());
+        Date time = null;
+        if(!StringUtils.isBlank(orderListRequest.getCreate_time())) {
+        		time = new Date(orderListRequest.getCreate_time());
+        }
+        int pageSize = 20;
+        if(!StringUtils.isBlank(orderListRequest.getPage_size())) {
+        		pageSize = Integer.parseInt(orderListRequest.getPage_size());
+        }
+        
         String siteName = null;
         Integer type = Integer.parseInt(orderListRequest.getType());
         if(mallId>0) {
@@ -302,7 +311,7 @@ public class BuyerController {
         orderListResponse.setHaihu_session(orderListRequest.getHaihu_session());
         orderListResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
         orderListResponse.setUser_id(String.valueOf(userId));
-        List<MiniOrder> miniOrders = miniOrderService.getMiniOrderList(type, siteName, userId);
+        List<MiniOrder> miniOrders = miniOrderService.getMiniOrderList(type, siteName, userId,time,pageSize);
         List<OrderInfo> orderList = new ArrayList<OrderInfo>();
         List<String> orders = new ArrayList<String>();
         for(MiniOrder m:miniOrders) {
@@ -545,7 +554,12 @@ public class BuyerController {
     OrderInfo getOrderInfo(List<OrderDetail> orderDetails,Long userId){
     		OrderInfo orderInfo = new OrderInfo();
 		orderInfo.setCreate_time(String.valueOf(orderDetails.get(0).getGmtCreate().getTime()));
-		orderInfo.setEnd_time(String.valueOf(orderDetails.get(0).getGmtCreate().getTime() + (30 * 60*1000)));
+		if(System.currentTimeMillis()>orderDetails.get(0).getGmtCreate().getTime()) {
+			orderInfo.setEnd_time(String.valueOf(System.currentTimeMillis()-orderDetails.get(0).getGmtCreate().getTime()));
+		}else {
+			orderInfo.setEnd_time("0");
+		}
+		
 		List<BuyerGoods> goodsList = new ArrayList<BuyerGoods>();
 		List<BuyerPackage> packageList = new ArrayList<BuyerPackage>();
 		List<BuyerGoods> packageGoodsList = new ArrayList<BuyerGoods>();
@@ -554,7 +568,7 @@ public class BuyerController {
 		for(OrderDetail orderDetail:orderDetails) {
 			BuyerGoods buyerGoods = new BuyerGoods();
 			String img = productMapper.getProductImg(orderDetail.getProductId());
-			buyerGoods.setImg("img.haihu.com/"+img);
+			buyerGoods.setImg("http://img.haihu.com/"+img);
 			String name = productMapper.getProductName(orderDetail.getProductId());
 			buyerGoods.setMall_price(orderDetail.getMyPrice());
 			String status = orderDetailService.getStatus(orderDetail, userId);
@@ -582,8 +596,8 @@ public class BuyerController {
 		orderInfo.setGoods_list(goodsList);
 		orderInfo.setPackage_list(packageList);
 		orderInfo.setIncome("5");
-		Mall mall = new Mall();
-		mall.setMall(orderDetails.get(0).getSiteName());
+		MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionByName(orderDetails.get(0).getSiteName());
+		Mall mall = getMall(mallDefinition);
 		orderInfo.setMall(mall);
 		orderInfo.setOrder_no(orderDetails.get(0).getOrderNo());
 		if(orderDetails.get(0).getOrderTime()!=null) {
@@ -613,7 +627,7 @@ public class BuyerController {
 		mall.setCountry(mallDefinition.getCountry());
 		mall.setMall(mallDefinition.getName());
 		if(StringUtils.isBlank(mallDefinition.getIcon())) {
-			mall.setMall_icon("img.haihu.com/"+mallDefinition.getIcon());
+			mall.setMall_icon("http://img.haihu.com/"+mallDefinition.getIcon());
 		}
 		mall.setMall_id(String.valueOf(mallDefinition.getId()));
 		return mall;

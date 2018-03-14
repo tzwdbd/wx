@@ -25,7 +25,7 @@ public class MiniOrderServiceImpl implements MiniOrderService {
 	private MiniOrderMapper miniOrderMapper;
 
 	@Override
-	public List<MiniOrder> getMiniOrderList(Integer type,String siteName,Long userId) {
+	public List<MiniOrder> getMiniOrderList(Integer type,String siteName,Long userId,Date time,Integer pageSize) {
 		//全部
 		if(type==0) {
 			if(siteName ==null) {
