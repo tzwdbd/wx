@@ -57,12 +57,12 @@ public class WxMaUserController {
         }
         try {
             WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo(loginRequest.getCode());
-//            this.logger.info(session.getSessionKey());
 //            this.logger.info(session.getOpenid());
 //            this.logger.info(session.getExpiresin().toString());
 //            this.logger.info(session.getUnionid());
             WechatInfo wechatInfo = loginRequest.getWechat_userInfo();
             SystemInfo systemInfo = loginRequest.getSystem_info();
+            this.logger.info("session:"+session.getSessionKey()+"-->rewdata:"+wechatInfo.getRawData()+"-->signature:"+wechatInfo.getSignature()+"-->unionis:"+session.getUnionid()+"-->openid="+session.getOpenid());
             // 用户信息校验
             if (!this.wxService.getUserService().checkUserInfo(session.getSessionKey(), wechatInfo.getRawData(), wechatInfo.getSignature())) {
                 return "user check failed";

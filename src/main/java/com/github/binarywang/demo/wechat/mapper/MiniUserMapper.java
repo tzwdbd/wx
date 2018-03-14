@@ -24,7 +24,7 @@ public interface MiniUserMapper {
 	@SelectProvider(type=SqlProvider.class,method="selectUser")  
 	public List<MiniUser> getUserList(MiniUser user);
 	
-	@Insert("insert into oversea.mini_users(nick_name, status,open_id,language,gender,city,province,country,avatar_url,gmt_create,gmt_modified,weixin_unionid,wechat_version,brand,model,screen_width,screen_height,system,platform,mail) values(#{nickName}, #{status},#{openId},#{language},#{gender},#{city},#{province},#{country},#{avatarUrl},now(),now(),#{weixinUnionid},#{wechatVersion},#{brand},#{model},#{screenWidth},#{screenHeight},#{system},#{platform},#{mail})")
+	@Insert("insert into oversea.mini_users(nick_name, status,open_id,language,gender,city,province,country,avatar_url,gmt_create,gmt_modified,weixin_unionid,wechat_version,brand,model,screen_width,screen_height,system,platform,mail) values(#{user.nickName}, #{user.status},#{user.openId},#{user.language},#{user.gender},#{user.city},#{user.province},#{user.country},#{user.avatarUrl},now(),now(),#{user.weixinUnionid},#{user.wechatVersion},#{user.brand},#{user.model},#{user.screenWidth},#{user.screenHeight},#{user.system},#{user.platform},#{user.mail})")
 	@Options(useGeneratedKeys=true,keyProperty="id")
 	public int add(MiniUser user);
 
