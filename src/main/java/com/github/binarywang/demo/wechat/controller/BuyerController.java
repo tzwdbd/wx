@@ -346,15 +346,17 @@ public class BuyerController {
         orderDetailResponse.setUser_id(String.valueOf(userId));
         orderDetailResponse.setOrder(orderInfo);
         
-        OrderAccount orderAccount = orderAccountService.getOrderAccountByAccountId(orderDetails.get(0).getAccountId());
-        BuyerAccount buyerAccount = new BuyerAccount();
-		buyerAccount.setAccount(orderAccount.getPayAccount());
-		buyerAccount.setAccount_id(String.valueOf(orderAccount.getAccountId()));
-		MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionByName(orderAccount.getAccountType());
-		Mall mall = getMall(mallDefinition);
-		buyerAccount.setMall(mall);
-		buyerAccount.setStatus(String.valueOf(orderAccount.getStatus()));
-        orderDetailResponse.setAccount(buyerAccount);
+        if(orderDetails.get(0).getAccountId()!=null && orderDetails.get(0).getAccountId()>0) {
+	        OrderAccount orderAccount = orderAccountService.getOrderAccountByAccountId(orderDetails.get(0).getAccountId());
+	        BuyerAccount buyerAccount = new BuyerAccount();
+			buyerAccount.setAccount(orderAccount.getPayAccount());
+			buyerAccount.setAccount_id(String.valueOf(orderAccount.getAccountId()));
+			MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionByName(orderAccount.getAccountType());
+			Mall mall = getMall(mallDefinition);
+			buyerAccount.setMall(mall);
+			buyerAccount.setStatus(String.valueOf(orderAccount.getStatus()));
+	        orderDetailResponse.setAccount(buyerAccount);
+        }
         String status = orderDetailService.getStatus(orderDetails, userId);
         List<BuyerExpressNode> expressNodeList = new ArrayList<BuyerExpressNode>();
     		BuyerExpressNode buyerExpressNode1 = new BuyerExpressNode();
