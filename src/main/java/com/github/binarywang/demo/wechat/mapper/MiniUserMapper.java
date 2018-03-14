@@ -25,7 +25,7 @@ public interface MiniUserMapper {
 	public List<MiniUser> getUserList(MiniUser user);
 	
 	@Insert("insert into oversea.mini_users(nick_name, status,open_id,language,gender,city,province,country,avatar_url,gmt_create,gmt_modified,weixin_unionid,wechat_version,brand,model,screen_width,screen_height,system,platform,mail) values(#{user.nickName}, #{user.status},#{user.openId},#{user.language},#{user.gender},#{user.city},#{user.province},#{user.country},#{user.avatarUrl},now(),now(),#{user.weixinUnionid},#{user.wechatVersion},#{user.brand},#{user.model},#{user.screenWidth},#{user.screenHeight},#{user.system},#{user.platform},#{user.mail})")
-	@Options(useGeneratedKeys=true,keyProperty="id")
+	@Options(useGeneratedKeys=true,keyProperty="user.id")
 	public int add(@Param("user") MiniUser user);
 
 	@Update("UPDATE oversea.mini_users SET username = #{user.username} , age = #{user.age} WHERE id = #{id}")

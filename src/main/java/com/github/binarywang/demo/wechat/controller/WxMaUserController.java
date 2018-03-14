@@ -57,13 +57,13 @@ public class WxMaUserController {
             return "empty jscode";
         }
         try {
-            WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo(loginRequest.getCode());
+            //WxMaJscode2SessionResult session = this.wxService.getUserService().getSessionInfo(loginRequest.getCode());
 //            this.logger.info(session.getOpenid());
 //            this.logger.info(session.getExpiresin().toString());
 //            this.logger.info(session.getUnionid());
             WechatInfo wechatInfo = loginRequest.getWechat_userInfo();
             SystemInfo systemInfo = loginRequest.getSystem_info();
-            this.logger.info("session:"+session.getSessionKey()+"-->rewdata:"+wechatInfo.getRawData()+"-->signature:"+wechatInfo.getSignature()+"-->unionis:"+session.getUnionid()+"-->openid="+session.getOpenid());
+            //this.logger.info("session:"+session.getSessionKey()+"-->rewdata:"+wechatInfo.getRawData()+"-->signature:"+wechatInfo.getSignature()+"-->unionis:"+session.getUnionid()+"-->openid="+session.getOpenid());
             // 用户信息校验
 //            if (!this.wxService.getUserService().checkUserInfo(session.getSessionKey(), wechatInfo.getRawData(), wechatInfo.getSignature())) {
 //                return "user check failed";
@@ -72,10 +72,10 @@ public class WxMaUserController {
             // 解密用户信息
             //WxMaUserInfo userInfo = this.wxService.getUserService().getUserInfo(session.getSessionKey(), wechatInfo.getEncryptedData(), wechatInfo.getIv());
             UserInfo userInfo  = wechatInfo.getUserInfo();
-            userInfo.setUnionId(session.getUnionid());
-            MiniUser user = userService.getUserByOpenId(session.getOpenid());
-            if(user==null) {
-            		user = userService.addUser(userInfo, systemInfo);
+           // userInfo.setUnionId(session.getUnionid());
+            //MiniUser user = userService.getUserByOpenId(session.getOpenid());
+            //if(user==null) {
+            MiniUser user = userService.addUser(userInfo, systemInfo);
             		MiniIncome miniIncome = new MiniIncome();
             		miniIncome.setAlreadyPresented(0);
             		miniIncome.setCanPresented(0);
@@ -85,7 +85,7 @@ public class WxMaUserController {
             		miniIncome.setGmtCreate(new Date());
             		miniIncome.setGmtMmodified(new Date());
             		miniIncomeService.add(miniIncome);
-            }
+           // }
     			LoginResponse loginResponse = new LoginResponse();
     			loginResponse.setUser_info(userInfo);
     			try {
@@ -96,7 +96,7 @@ public class WxMaUserController {
     			loginResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
     			loginResponse.setUser_id(String.valueOf(user.getId()));
             return JsonUtils.toJson(loginResponse);
-        } catch (WxErrorException e) {
+        } catch (Exception e) {
             this.logger.error(e.getMessage(), e);
             return e.toString();
         }

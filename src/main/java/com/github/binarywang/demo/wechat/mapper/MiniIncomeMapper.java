@@ -22,9 +22,9 @@ public interface MiniIncomeMapper {
 	@Select("SELECT * FROM oversea.mini_income WHERE mini_user_id = #{miniUserId} limit 1")
 	MiniIncome getMiniIncomeByUserId(@Param("miniUserId")  Long userId);
 
-	@Insert("insert into oversea.mini_income(mini_user_id, expect_presented,can_presented,already_presented,deduct,gmt_create,gmt_modified) values(#{miniUserId}, 0, 0, 0,0, now(),now()")
-	@Options(useGeneratedKeys=true,keyProperty="id")
-	public int add(MiniIncome miniIncome);
+	@Insert("insert into oversea.mini_income(mini_user_id, expect_presented,can_presented,already_presented,deduct,gmt_create,gmt_modified) values(#{miniIncome.miniUserId}, 0, 0, 0,0, now(),now())")
+	@Options(useGeneratedKeys=true,keyProperty="miniIncome.id")
+	public int add(@Param("miniIncome") MiniIncome miniIncome);
 
 	@Update("UPDATE oversea.mini_income SET expect_presented = expect_presented+#{expectPresented} WHERE mini_user_id = #{miniUserId}")
 	public int updateExpectPresented(@Param("miniUserId") Long miniUserId,Integer expectPresented);
