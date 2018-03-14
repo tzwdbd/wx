@@ -294,7 +294,7 @@ public class BuyerController {
         Long mallId = Long.parseLong(orderListRequest.getMall_id());
         String siteName = null;
         Integer type = Integer.parseInt(orderListRequest.getType());
-        if(mallId>=0) {
+        if(mallId>0) {
         		MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionById(mallId);
         		siteName = mallDefinition.getName();
         }
