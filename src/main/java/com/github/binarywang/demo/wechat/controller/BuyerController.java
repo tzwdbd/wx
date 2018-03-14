@@ -115,7 +115,7 @@ public class BuyerController {
         	income.setExpect_presented(String.valueOf(miniIncome.getExpectPresented()));
         	income.setAmount(String.valueOf(miniIncome.getAlreadyPresented()+miniIncome.getCanPresented()+miniIncome.getExpectPresented()-miniIncome.getDeduct()));
         	indexResponse.setIncome(income);
-        	List<MiniOrder> miniOrders = miniOrderService.getMiniOrderList(1, null, userId,null,null);
+        	List<MiniOrder> miniOrders = miniOrderService.getMiniOrderList(1, null, userId,null,10000);
         	indexResponse.setUnauth_num(String.valueOf(miniOrders.size()));
         return JsonUtils.toJson(indexResponse);
     }
@@ -294,7 +294,7 @@ public class BuyerController {
         Long mallId = Long.parseLong(orderListRequest.getMall_id());
         Date time = null;
         if(!StringUtils.isBlank(orderListRequest.getCreate_time())) {
-        		time = new Date(orderListRequest.getCreate_time());
+        		time = new Date(Long.parseLong(orderListRequest.getCreate_time()));
         }
         int pageSize = 20;
         if(!StringUtils.isBlank(orderListRequest.getPage_size())) {
@@ -570,7 +570,7 @@ public class BuyerController {
 			String img = productMapper.getProductImg(orderDetail.getProductId());
 			buyerGoods.setImg("http://img.haihu.com/"+img);
 			String name = productMapper.getProductName(orderDetail.getProductId());
-			buyerGoods.setMall_price(orderDetail.getMyPrice());
+			buyerGoods.setMall_price("$"+orderDetail.getMyPrice());
 			String status = orderDetailService.getStatus(orderDetail, userId);
 			buyerGoods.setStatus(status);
 			buyerGoods.setNumber(String.valueOf(orderDetail.getNum()));
@@ -595,7 +595,7 @@ public class BuyerController {
 		}
 		orderInfo.setGoods_list(goodsList);
 		orderInfo.setPackage_list(packageList);
-		orderInfo.setIncome("5");
+		orderInfo.setIncome("¥5");
 		MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionByName(orderDetails.get(0).getSiteName());
 		Mall mall = getMall(mallDefinition);
 		orderInfo.setMall(mall);
@@ -604,10 +604,13 @@ public class BuyerController {
 			orderInfo.setOrder_time(String.valueOf(orderDetails.get(0).getOrderTime().getTime()));
 		}
 		
-		orderInfo.setRmb_price(String.valueOf(rmbPrice));
+		orderInfo.setRmb_price("¥"+String.valueOf(rmbPrice));
 		String status = orderDetailService.getStatus(orderDetails, userId);
 		orderInfo.setStatus(String.valueOf(status));
-		orderInfo.setTotal_price(String.valueOf(myPrice));
+		orderInfo.setTotal_price("$"+String.valueOf(myPrice));
+		if("2".equals(orderInfo.getStatus())) {
+			orderInfo.setRelease(orderDetails.get(0).getRemarks());
+		}
 		return orderInfo;
     }
 

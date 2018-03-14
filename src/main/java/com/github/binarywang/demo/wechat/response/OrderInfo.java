@@ -26,6 +26,7 @@ public class OrderInfo implements Serializable{
 	private String order_no;
 	private String mall_no;
 	private String order_time;
+	private String release;
 	
 
 }

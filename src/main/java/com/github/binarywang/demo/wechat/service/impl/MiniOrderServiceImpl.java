@@ -29,21 +29,45 @@ public class MiniOrderServiceImpl implements MiniOrderService {
 		//全部
 		if(type==0) {
 			if(siteName ==null) {
-				return miniOrderMapper.getAllMiniOrderList(userId);
+				if(time!=null) {
+					return miniOrderMapper.getAllMiniOrderByTimeList(userId, pageSize, time);
+				}else {
+					return miniOrderMapper.getAllMiniOrderList(userId,pageSize);
+				}
 			}else {
-				return miniOrderMapper.getAllMiniOrderBySiteNameList(userId,siteName);
+				if(time!=null) {
+					return miniOrderMapper.getAllMiniOrderBySiteNameAndTimeList(userId, siteName, pageSize, time);
+				}else {
+					return miniOrderMapper.getAllMiniOrderBySiteNameList(userId,siteName,pageSize);
+				}
 			}
 		}else if (type==1) {
 			if(siteName ==null) {
-				return miniOrderMapper.getMiniOrderByUserIdList(0,userId);
+				if(time!=null) {
+					return miniOrderMapper.getMiniOrderByUserIdAndTimeList(0,userId,pageSize, time);
+				}else {
+					return miniOrderMapper.getMiniOrderByUserIdList(0,userId,pageSize);
+				}
 			}else {
-				return miniOrderMapper.getMiniOrderBySiteNameList(0, userId, siteName);
+				if(time!=null) {
+					return miniOrderMapper.getMiniOrderBySiteNameAndTimeList(0, userId, siteName,pageSize, time);
+				}else {
+					return miniOrderMapper.getMiniOrderBySiteNameList(0, userId, siteName,pageSize);
+				}
 			}
 		}else if (type==2) {
 			if(siteName ==null) {
-				return miniOrderMapper.getMiniOrderByUserIdList(5,userId);
+				if(time!=null) {
+					return miniOrderMapper.getMiniOrderByUserIdAndTimesList(5,userId,pageSize, time);
+				}else {
+					return miniOrderMapper.getMiniOrderByUserIdList(5,userId,pageSize);
+				}
 			}else {
-				return miniOrderMapper.getMiniOrderBySiteNameList(5, userId, siteName);
+				if(time!=null) {
+					return miniOrderMapper.getMiniOrderBySiteNameAndTimesList(5, userId, siteName,pageSize, time);
+				}else {
+					return miniOrderMapper.getMiniOrderBySiteNameList(5, userId, siteName,pageSize);
+				}
 			}
 		}
 		return null;
