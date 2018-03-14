@@ -21,7 +21,13 @@ import com.github.binarywang.demo.wechat.mapper.AlipayTradeMoneyMapper;
 import com.github.binarywang.demo.wechat.mapper.MiniIncomeDetailMapper;
 import com.github.binarywang.demo.wechat.mapper.MiniIncomeMapper;
 import com.github.binarywang.demo.wechat.mapper.MiniOrderMapper;
-import com.github.binarywang.demo.wechat.service.MiniIncomeDetailService;import lombok.Data;
+import com.github.binarywang.demo.wechat.service.MiniIncomeDetailService;
+
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaKefuMessage;
+import cn.binarywang.wx.miniapp.bean.WxMaKefuMessage.KfText;
+import me.chanjar.weixin.common.api.WxConsts;
+import me.chanjar.weixin.common.exception.WxErrorException;
 
 @Configuration
 @EnableScheduling
@@ -38,6 +44,8 @@ public class PushOrder {
 	private MiniIncomeDetailMapper miniIncomeDetailMapper;
 	@Autowired
 	private MiniIncomeMapper miniIncomeMapper;
+	@Autowired
+	protected WxMaService wxService;
 
 
     @Scheduled(cron = "0 0/1 * * * ?") // 每1分钟执行一次
@@ -46,6 +54,18 @@ public class PushOrder {
     		for(MiniOrder miniOrder:miniOrders) {
     			//推送消息
     			miniOrderMapper.updateStatus(miniOrder.getId(), 0);
+    			
+    			 WxMaKefuMessage message = new WxMaKefuMessage();
+    			 message.setMsgType(WxConsts.KefuMsgType.TEXT);
+    			 message.setToUser("oAra84qw3VcLYzS2tZ2NfRgkAdiw");
+    			 KfText test = new KfText("欢迎欢迎，热烈欢迎\n换行测试\n超链接:<a href=\"http://www.baidu.com\">Hello World</a>");
+    			 message.setText(test);
+
+    			 try {
+					wxService.getMsgService().sendKefuMsg(message);
+				} catch (WxErrorException e) {
+					e.printStackTrace();
+				}
     		}
         
     }
