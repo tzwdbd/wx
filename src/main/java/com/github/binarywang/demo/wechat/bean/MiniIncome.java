@@ -20,6 +20,6 @@ public class MiniIncome implements Serializable{
 	private Integer deduct;
 	private Integer expectPresented;
 	private Date gmtCreate;
-	private Date gmtMmodified;
+	private Date gmtModified;
 
 }

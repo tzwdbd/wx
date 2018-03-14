@@ -506,7 +506,7 @@ public class BuyerController {
 	            alipayTradeMoney.setAlipayAccount(alipay);
 	            alipayTradeMoney.setRealName(name);
 	            alipayTradeMoney.setGmtCreate(new Date());
-	            alipayTradeMoney.setGmtMmodified(new Date());
+	            alipayTradeMoney.setGmtModified(new Date());
 	            alipayTradeMoney.setType(2);
 	            alipayTradeMoney.setUser_id(userId);;
 	            alipayTradeMoneyMapper.add(alipayTradeMoney);

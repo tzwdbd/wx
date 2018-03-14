@@ -23,7 +23,7 @@ public class MiniUser implements Serializable{
 	private String country;
 	private String avatarUrl;
 	private Date gmtCreate;
-	private Date gmtMmodified;
+	private Date gmtModified;
 	private String weixinUnionid;
 	private String wechatVersion;
 	private String brand;

@@ -22,6 +22,6 @@ public class AlipayTradeMoney implements Serializable{
 	private Integer status;
 	private Integer operatorId;
 	private Date gmtCreate;
-	private Date gmtMmodified;
+	private Date gmtModified;
 
 }

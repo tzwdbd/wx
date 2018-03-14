@@ -84,7 +84,7 @@ public class WxMaUserController {
             		miniIncome.setExpectPresented(0);
             		miniIncome.setMiniUserId(user.getId());
             		miniIncome.setGmtCreate(new Date());
-            		miniIncome.setGmtMmodified(new Date());
+            		miniIncome.setGmtModified(new Date());
             		miniIncomeService.add(miniIncome);
             }
     			LoginResponse loginResponse = new LoginResponse();
