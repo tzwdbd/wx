@@ -14,5 +14,5 @@ public class WechatInfo implements Serializable{
 	private String signature;
 	private String encryptedData;
 	private String iv;
-	private UserInfo user_info;
+	private UserInfo userInfo;
 }
