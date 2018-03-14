@@ -8,8 +8,8 @@ wechat:
   miniapp:
     appid: wx84cc48c8ddcf5e08
     secret: 3d2697cd7118d4278c71759a3d992c34
-    token: 111
-    aesKey: 111
+    token: 3d2697cd7118d4278c71759a3d992c34
+    aesKey: 9k81hwmQQQ0B9HNLbrpPWiDM5AewSBdVHnpGxWUOlH5
     msgDataFormat: JSON
 spring:
   datasource:
