@@ -24,6 +24,6 @@ public class MiniIncomeDetail implements Serializable{
 	private Date payment_time;
 	private String userName;
 	private Date gmtCreate;
-	private Date gmtMmodified;
+	private Date gmtModified;
 
 }

@@ -471,7 +471,7 @@ public class BuyerController {
         List<IncomeDetailInfo> incomeDetailInfos = new ArrayList<IncomeDetailInfo>();
         for(MiniIncomeDetail miniIncomeDetail:miniIncomeDetails) {
         		IncomeDetailInfo incomeDetailInfo = new IncomeDetailInfo();
-        		incomeDetailInfo.setDate(String.valueOf(miniIncomeDetail.getGmtMmodified().getTime()));
+        		incomeDetailInfo.setDate(String.valueOf(miniIncomeDetail.getGmtModified().getTime()));
         		incomeDetailInfo.setIncome(miniIncomeDetail.getIncome());
         		incomeDetailInfo.setOrder_no(miniIncomeDetail.getOrder_no());
         		incomeDetailInfo.setTitle(miniIncomeDetail.getTitle());
