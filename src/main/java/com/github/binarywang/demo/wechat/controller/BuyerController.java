@@ -554,10 +554,10 @@ public class BuyerController {
     OrderInfo getOrderInfo(List<OrderDetail> orderDetails,Long userId){
     		OrderInfo orderInfo = new OrderInfo();
 		orderInfo.setCreate_time(String.valueOf(orderDetails.get(0).getGmtCreate().getTime()));
-		if(System.currentTimeMillis()>orderDetails.get(0).getGmtCreate().getTime()) {
-			orderInfo.setEnd_time(String.valueOf(System.currentTimeMillis()-orderDetails.get(0).getGmtCreate().getTime()));
-		}else {
+		if(System.currentTimeMillis()-orderDetails.get(0).getGmtCreate().getTime()>30*60*1000) {
 			orderInfo.setEnd_time("0");
+		}else {
+			orderInfo.setEnd_time(String.valueOf(System.currentTimeMillis()-orderDetails.get(0).getGmtCreate().getTime()));
 		}
 		
 		List<BuyerGoods> goodsList = new ArrayList<BuyerGoods>();

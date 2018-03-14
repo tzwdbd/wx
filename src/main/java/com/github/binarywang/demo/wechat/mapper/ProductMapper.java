@@ -7,10 +7,10 @@ import org.apache.ibatis.annotations.Select;
  */
 public interface ProductMapper {
 
-	@Select("SELECT * FROM oversea.product WHERE id = #{productId}")
+	@Select("SELECT name FROM oversea.product WHERE id = #{productId}")
 	String getProductName(@Param("productId") Long productId);
 	
-	@Select("SELECT * FROM oversea.product_image WHERE product_id = #{productId} limit 1")
+	@Select("SELECT default_image FROM oversea.product_image WHERE product_id = #{productId} limit 1")
 	String getProductImg(@Param("productId") Long productId);
 	
 }
