@@ -27,13 +27,13 @@ public interface MiniIncomeMapper {
 	public int add(@Param("miniIncome") MiniIncome miniIncome);
 
 	@Update("UPDATE oversea.mini_income SET expect_presented = expect_presented+#{expectPresented} WHERE mini_user_id = #{miniUserId}")
-	public int updateExpectPresented(@Param("miniUserId") Long miniUserId,Integer expectPresented);
+	public int updateExpectPresented(@Param("miniUserId") Long miniUserId,@Param("expectPresented")  Integer expectPresented);
 	
 	@Update("UPDATE oversea.mini_income SET can_presented = can_presented-#{canPresented} WHERE mini_user_id = #{miniUserId} and can_presented>=#{canPresented}")
-	public int updateCanPresented(@Param("miniUserId") Long miniUserId,Integer canPresented);
+	public int updateCanPresented(@Param("miniUserId") Long miniUserId,@Param("canPresented") Integer canPresented);
 	
 	@Update("UPDATE oversea.mini_income SET already_presented = already_presented+#{alreadyPresented} WHERE mini_user_id = #{miniUserId}")
-	public int updateAlreadyPresented(@Param("miniUserId") Long miniUserId,Integer alreadyPresented);
+	public int updateAlreadyPresented(@Param("miniUserId") Long miniUserId,@Param("alreadyPresented") Integer alreadyPresented);
 
 
 }

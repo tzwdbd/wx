@@ -17,17 +17,17 @@ import com.github.binarywang.demo.wechat.bean.OrderAccount;
 public interface AccountMapper {
 
 	@Select("SELECT * FROM automan.order_account_new WHERE account_id = #{accoutId}")
-	OrderAccount getAccoutIdByAccoutId(Integer accoutId);
+	OrderAccount getAccoutIdByAccoutId(@Param("accoutId") Integer accoutId);
 
-	@Insert("insert into automan.order_account_new(account_type,pay_account, login_pwd,status) values(#{accountType},#{payAccount}, #{loginPwd}, #{status})")
-	@Options(useGeneratedKeys=true,keyProperty="id")
-	public int add(OrderAccount orderAccount);
+	@Insert("insert into automan.order_account_new(account_type,pay_account, login_pwd,status) values(#{orderAccount.accountType},#{orderAccount.payAccount}, #{orderAccount.loginPwd}, #{orderAccount.status})")
+	@Options(useGeneratedKeys=true,keyProperty="orderAccount.id")
+	public int add(@Param("orderAccount") OrderAccount orderAccount);
 
 	@Select("SELECT * FROM automan.order_account_new WHERE account_source = #{accountSource} and account_type = #{accountType}")
-	List<OrderAccount> getOrderAccountByAccountSource(String accountSource, String accountType);
+	List<OrderAccount> getOrderAccountByAccountSource(@Param("accountSource")String accountSource, @Param("accountType") String accountType);
 	
 	@Update("UPDATE automan.order_account_new SET pay_account = #{orderAccount.payAccount} , login_pwd = #{orderAccount.loginPwd} WHERE account_id = #{orderAccount.accoutId}")
-	public int updateOrderAccount(OrderAccount orderAccount);
+	public int updateOrderAccount(@Param("orderAccount") OrderAccount orderAccount);
 	
 	@Select("SELECT * FROM automan.order_account_new WHERE account_source = #{accountSource}")
 	List<OrderAccount> getAllOrderAccountByAccountSource(String accountSource);

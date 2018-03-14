@@ -18,19 +18,19 @@ import com.github.binarywang.demo.wechat.bean.OrderAccount;
 public interface MiniOrderMapper {
 
 	@Select("SELECT * FROM oversea.mini_order WHERE status = #{status}")
-	List<MiniOrder> getMiniOrderList(Integer status);
+	List<MiniOrder> getMiniOrderList(@Param("status")  Integer status);
 	
 	@Select("SELECT * FROM oversea.mini_order WHERE mini_user_id = #{miniUserId}")
-	List<MiniOrder> getAllMiniOrderList(Long miniUserId);
+	List<MiniOrder> getAllMiniOrderList(@Param("miniUserId") Long miniUserId);
 	
 	@Select("SELECT * FROM oversea.mini_order WHERE mini_user_id = #{miniUserId} and site_name = #{siteName}")
-	List<MiniOrder> getAllMiniOrderBySiteNameList(Long miniUserId,String siteName);
+	List<MiniOrder> getAllMiniOrderBySiteNameList(@Param("miniUserId") Long miniUserId,@Param("siteName") String siteName);
 	
 	@Select("SELECT * FROM oversea.mini_order WHERE status = #{status} and mini_user_id = #{miniUserId}")
-	List<MiniOrder> getMiniOrderByUserIdList(Integer status,Long miniUserId);
+	List<MiniOrder> getMiniOrderByUserIdList(@Param("status") Integer status,@Param("miniUserId") Long miniUserId);
 	
 	@Select("SELECT * FROM oversea.mini_order WHERE status = #{status} and mini_user_id = #{miniUserId} and site_name = #{siteName}")
-	List<MiniOrder> getMiniOrderBySiteNameList(Integer status,Long miniUserId,String siteName);
+	List<MiniOrder> getMiniOrderBySiteNameList(@Param("status") Integer status,@Param("miniUserId") Long miniUserId,@Param("siteName") String siteName);
 
 	@Update("UPDATE oversea.mini_order SET status = #{status}  WHERE id = #{id}")
 	public int updateStatus(@Param("id") Long id, @Param("status") Integer status);
@@ -39,9 +39,9 @@ public interface MiniOrderMapper {
 	public int updateMiniOrderByOrder(@Param("orderNo") String orderNo, @Param("fromStatus") Integer fromStatus,@Param("toStatus") Integer toStatus);
 	
 	@Select("SELECT * FROM oversea.mini_order WHERE order_no = #{orderNo} and product_entity_id = #{productEntityId} and mini_user_id=#{userId} limit 1")
-	public MiniOrder getOrderDetailByOrderNoAndSkuId(String orderNo, Long productEntityId,@Param("userId") Long userId) ;
+	public MiniOrder getOrderDetailByOrderNoAndSkuId(@Param("orderNo")String orderNo,@Param("productEntityId") Long productEntityId,@Param("userId") Long userId) ;
 	
 	@Update("UPDATE oversea.mini_order SET status = #{toStatus}  WHERE id = #{id} and status =#{fromStatus}")
-	public int updateMiniOrderById(Long id, Integer fromStatus,Integer toStatus);
+	public int updateMiniOrderById(@Param("id") Long id, @Param("fromStatus") Integer fromStatus,@Param("toStatus") Integer toStatus);
 	
 }
