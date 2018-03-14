@@ -3,6 +3,7 @@ package com.github.binarywang.demo.wechat.scheduled;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,8 +18,10 @@ import com.github.binarywang.demo.wechat.bean.AlipayTradeMoney;
 import com.github.binarywang.demo.wechat.bean.MiniIncomeDetail;
 import com.github.binarywang.demo.wechat.bean.MiniOrder;
 import com.github.binarywang.demo.wechat.mapper.AlipayTradeMoneyMapper;
+import com.github.binarywang.demo.wechat.mapper.MiniIncomeDetailMapper;
+import com.github.binarywang.demo.wechat.mapper.MiniIncomeMapper;
 import com.github.binarywang.demo.wechat.mapper.MiniOrderMapper;
-import com.github.binarywang.demo.wechat.service.MiniIncomeDetailService;
+import com.github.binarywang.demo.wechat.service.MiniIncomeDetailService;import lombok.Data;
 
 @Configuration
 @EnableScheduling
@@ -31,6 +34,10 @@ public class PushOrder {
 	private AlipayTradeMoneyMapper alipayTradeMoneyMapper;
 	@Autowired
 	private MiniIncomeDetailService miniIncomeDetailService;
+	@Autowired
+	private MiniIncomeDetailMapper miniIncomeDetailMapper;
+	@Autowired
+	private MiniIncomeMapper miniIncomeMapper;
 
 
     @Scheduled(cron = "0 0/1 * * * ?") // 每1分钟执行一次
@@ -73,6 +80,25 @@ public class PushOrder {
     				miniIncomeDetail.setType(3);
     				miniIncomeDetailService.add(miniIncomeDetail);
     			}
+    		}
+        
+    }
+    
+    @Scheduled(cron = "3 * 0/1 * * ?") // 每1分钟执行一次
+    public void addIncome() {
+    		List<MiniOrder> miniOrders = miniOrderMapper.getMiniOrderList(13);
+    		List<String> orders = new ArrayList<String>();
+    		for(MiniOrder miniOrder:miniOrders) {
+    			miniOrderMapper.updateStatus(miniOrder.getId(), 14);
+    			if(!orders.contains(miniOrder.getOrderNo())) {
+    				MiniIncomeDetail miniIncomeDetail = miniIncomeDetailMapper.getMiniIncomeDetailByOrderNo(miniOrder.getMiniUserId(), miniOrder.getOrderNo());
+    				miniIncomeDetailMapper.updateMiniIncomeDetailByOrderNo(1, miniOrder.getOrderNo());
+    				orders.add(miniOrder.getOrderNo());
+    				if(miniIncomeDetail!=null) {
+    					miniIncomeMapper.updateReduceExpectPresented(miniOrder.getMiniUserId(), Integer.parseInt(miniIncomeDetail.getIncome()));
+    				}
+    			}
+    			
     		}
         
     }

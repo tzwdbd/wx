@@ -1,19 +1,12 @@
 package com.github.binarywang.demo.wechat.mapper;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.SelectKey;
-import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
 
 import com.github.binarywang.demo.wechat.bean.MiniIncome;
-import com.github.binarywang.demo.wechat.bean.MiniUser;
-import com.github.binarywang.demo.wechat.provider.SqlProvider;
 /**
  * @author liuxf
  */
@@ -34,6 +27,8 @@ public interface MiniIncomeMapper {
 	
 	@Update("UPDATE oversea.mini_income SET already_presented = already_presented+#{alreadyPresented} WHERE mini_user_id = #{miniUserId}")
 	public int updateAlreadyPresented(@Param("miniUserId") Long miniUserId,@Param("alreadyPresented") Integer alreadyPresented);
-
+	
+	@Update("UPDATE oversea.mini_income SET expect_presented = expect_presented-#{expectPresented} WHERE mini_user_id = #{miniUserId} and expect_presented>=#{expectPresented}")
+	public int updateReduceExpectPresented(@Param("miniUserId") Long miniUserId,@Param("expectPresented") Integer expectPresented);
 
 }

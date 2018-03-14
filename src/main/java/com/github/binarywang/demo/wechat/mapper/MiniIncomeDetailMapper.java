@@ -23,6 +23,12 @@ public interface MiniIncomeDetailMapper {
 
 	@Update("UPDATE oversea.mini_income_detail SET expect_presented = expect_presented+#{expectPresented} WHERE mini_user_id = #{miniUserId}")
 	public int updateExpectPresented(@Param("miniUserId") Long miniUserId,@Param("expectPresented")  Integer expectPresented);
+	
+	@Update("UPDATE oversea.mini_income_detail SET status = #{status} WHERE order_no = #{orderNo}")
+	public int updateMiniIncomeDetailByOrderNo(@Param("status") Integer status,@Param("orderNo")  String orderNo);
+	
+	@Select("SELECT * FROM oversea.mini_income_detail WHERE mini_user_id = #{miniUserId} and order_no =#{orderNo}")
+	MiniIncomeDetail getMiniIncomeDetailByOrderNo(@Param("miniUserId") Long userId,@Param("orderNo") String orderNo);
 
 
 }

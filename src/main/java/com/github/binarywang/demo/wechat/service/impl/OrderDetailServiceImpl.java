@@ -68,7 +68,15 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 				Integer expressStatus = userTradeExpressMapper.getUserTradeExpressByOrderNo(orderDetail.getOrderNo());
 				if(expressStatus!=null && expressStatus>3) {
 					status = 7;
+					if(expressStatus==14) {
+						status = 14;
+					}
 				}
+			}
+			if(status==14) {
+				miniOrderService.updateStatus(miniOrder.getId(), 13);
+			}else {
+				miniOrderService.updateStatus(miniOrder.getId(), status);
 			}
 		}
 		return String.valueOf(status);
