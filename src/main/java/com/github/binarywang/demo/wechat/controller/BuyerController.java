@@ -597,6 +597,7 @@ public class BuyerController {
 		}
 		orderInfo.setGoods_list(goodsList);
 		orderInfo.setPackage_list(packageList);
+		orderInfo.setMall_no(orderDetails.get(0).getMallOrderNo());
 		orderInfo.setIncome("¥5");
 		MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionByName(orderDetails.get(0).getSiteName());
 		Mall mall = getMall(mallDefinition);
