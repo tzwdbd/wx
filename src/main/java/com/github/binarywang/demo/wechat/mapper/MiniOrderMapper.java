@@ -27,7 +27,7 @@ public interface MiniOrderMapper {
 	@Select("SELECT * FROM oversea.mini_order WHERE mini_user_id = #{miniUserId} and site_name = #{siteName}  order by id desc limit #{pageSize}")
 	List<MiniOrder> getAllMiniOrderBySiteNameList(@Param("miniUserId") Long miniUserId,@Param("siteName") String siteName,@Param("pageSize") int pageSize);
 	
-	@Select("SELECT * FROM oversea.mini_order WHERE status = #{status} and mini_user_id = #{miniUserId} order by time id limit #{pageSize}")
+	@Select("SELECT * FROM oversea.mini_order WHERE status = #{status} and mini_user_id = #{miniUserId} order by id desc limit #{pageSize}")
 	List<MiniOrder> getMiniOrderByUserIdList(@Param("status") Integer status,@Param("miniUserId") Long miniUserId,@Param("pageSize") int pageSize);
 	
 	@Select("SELECT * FROM oversea.mini_order WHERE status = #{status} and mini_user_id = #{miniUserId} and site_name = #{siteName} order by id desc limit #{pageSize}")
