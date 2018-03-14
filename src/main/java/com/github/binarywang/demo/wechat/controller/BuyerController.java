@@ -70,7 +70,7 @@ import com.google.gson.Gson;
  * @author liuxf
  */
 @RestController
-@RequestMapping("/buyer")
+@RequestMapping("/mp/buyer")
 public class BuyerController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

@@ -72,6 +72,7 @@ public class WxMaUserController {
             // 解密用户信息
             //WxMaUserInfo userInfo = this.wxService.getUserService().getUserInfo(session.getSessionKey(), wechatInfo.getEncryptedData(), wechatInfo.getIv());
             UserInfo userInfo  = wechatInfo.getUserInfo();
+            userInfo.setOpenId(session.getOpenid());
             userInfo.setUnionId(session.getUnionid());
             MiniUser user = userService.getUserByOpenId(session.getOpenid());
             if(user==null) {
