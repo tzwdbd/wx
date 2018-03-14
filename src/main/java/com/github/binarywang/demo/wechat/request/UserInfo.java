@@ -18,5 +18,6 @@ public class UserInfo implements Serializable{
 	private String province;
 	private String country;
 	private String avatarUrl;
+	private String unionId;
 
 }

@@ -18,6 +18,7 @@ import com.github.binarywang.demo.wechat.bean.MiniUser;
 import com.github.binarywang.demo.wechat.exception.ProcessStatusCode;
 import com.github.binarywang.demo.wechat.request.LoginRequest;
 import com.github.binarywang.demo.wechat.request.SystemInfo;
+import com.github.binarywang.demo.wechat.request.UserInfo;
 import com.github.binarywang.demo.wechat.request.WechatInfo;
 import com.github.binarywang.demo.wechat.response.LoginResponse;
 import com.github.binarywang.demo.wechat.service.MiniIncomeService;
@@ -64,12 +65,13 @@ public class WxMaUserController {
             SystemInfo systemInfo = loginRequest.getSystem_info();
             this.logger.info("session:"+session.getSessionKey()+"-->rewdata:"+wechatInfo.getRawData()+"-->signature:"+wechatInfo.getSignature()+"-->unionis:"+session.getUnionid()+"-->openid="+session.getOpenid());
             // 用户信息校验
-            if (!this.wxService.getUserService().checkUserInfo(session.getSessionKey(), wechatInfo.getRawData(), wechatInfo.getSignature())) {
-                return "user check failed";
-            }
+//            if (!this.wxService.getUserService().checkUserInfo(session.getSessionKey(), wechatInfo.getRawData(), wechatInfo.getSignature())) {
+//                return "user check failed";
+//            }
 
             // 解密用户信息
-            WxMaUserInfo userInfo = this.wxService.getUserService().getUserInfo(session.getSessionKey(), wechatInfo.getEncryptedData(), wechatInfo.getIv());
+            //WxMaUserInfo userInfo = this.wxService.getUserService().getUserInfo(session.getSessionKey(), wechatInfo.getEncryptedData(), wechatInfo.getIv());
+            UserInfo userInfo  = wechatInfo.getUserInfo();
             userInfo.setUnionId(session.getUnionid());
             MiniUser user = userService.getUserByOpenId(session.getOpenid());
             if(user==null) {

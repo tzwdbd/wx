@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.github.binarywang.demo.wechat.bean.MiniUser;
 import com.github.binarywang.demo.wechat.mapper.MiniUserMapper;
 import com.github.binarywang.demo.wechat.request.SystemInfo;
+import com.github.binarywang.demo.wechat.request.UserInfo;
 import com.github.binarywang.demo.wechat.service.MiniUserService;
 
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
@@ -42,7 +43,7 @@ public class MiniUserServiceImpl implements MiniUserService {
 	}
 
 	@Override
-	public MiniUser addUser(WxMaUserInfo userInfo, SystemInfo systemInfo) {
+	public MiniUser addUser(UserInfo userInfo, SystemInfo systemInfo) {
 		//保存用户
 		MiniUser user = new MiniUser();
 		user.setAvatarUrl(userInfo.getAvatarUrl());
