@@ -438,7 +438,7 @@ public class BuyerController {
 			MiniIncomeDetail miniIncomeDetail = new MiniIncomeDetail();
 			miniIncomeDetail.setIncome("5");
 			miniIncomeDetail.setMiniUserId(userId);
-			miniIncomeDetail.setOrder_no(orderDetails.get(0).getOrderNo());
+			miniIncomeDetail.setOrderNo(orderDetails.get(0).getOrderNo());
 			miniIncomeDetail.setTitle(orderDetails.get(0).getSiteName());
 			miniIncomeDetail.setType(1);
 			miniIncomeDetailService.add(miniIncomeDetail);
@@ -473,7 +473,7 @@ public class BuyerController {
         		IncomeDetailInfo incomeDetailInfo = new IncomeDetailInfo();
         		incomeDetailInfo.setDate(String.valueOf(miniIncomeDetail.getGmtModified().getTime()));
         		incomeDetailInfo.setIncome(miniIncomeDetail.getIncome());
-        		incomeDetailInfo.setOrder_no(miniIncomeDetail.getOrder_no());
+        		incomeDetailInfo.setOrder_no(miniIncomeDetail.getOrderNo());
         		incomeDetailInfo.setTitle(miniIncomeDetail.getTitle());
         		incomeDetailInfo.setType(String.valueOf(miniIncomeDetail.getType()));
         		incomeDetailInfos.add(incomeDetailInfo);

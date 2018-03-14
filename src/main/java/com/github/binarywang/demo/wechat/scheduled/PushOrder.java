@@ -68,7 +68,7 @@ public class PushOrder {
     				miniIncomeDetail.setMiniUserId(alipayTradeMoney.getUser_id());
     				DateFormat ymdhmsFormat = new SimpleDateFormat("yyMMddHHmmssSSS");
     				String dateStr = ymdhmsFormat.format(new Date());
-    				miniIncomeDetail.setOrder_no(dateStr);
+    				miniIncomeDetail.setOrderNo(dateStr);
     				miniIncomeDetail.setTitle("申请提现");
     				miniIncomeDetail.setType(3);
     				miniIncomeDetailService.add(miniIncomeDetail);
