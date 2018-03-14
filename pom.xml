@@ -16,6 +16,25 @@
 
     <name>spring-boot-demo-for-wechat-miniapp</name>
     <description>Spring Boot Demo with wechat miniapp</description>
+    
+    <repositories>
+        <repository>
+            <id>repo</id>
+            <url>http://122.225.114.28:8085/artifactory/libs-release</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>repo-snapshot</id>
+            <url>http://122.225.114.28:8085/artifactory/libs-snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <properties>
         <weixin-java-miniapp.version>2.9.6.BETA</weixin-java-miniapp.version>
