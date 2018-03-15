@@ -3,7 +3,9 @@ package com.github.binarywang.demo.wechat.controller;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -571,9 +573,10 @@ public class BuyerController {
 		
 		List<BuyerGoods> goodsList = new ArrayList<BuyerGoods>();
 		List<BuyerPackage> packageList = new ArrayList<BuyerPackage>();
-		List<BuyerGoods> packageGoodsList = new ArrayList<BuyerGoods>();
+		
 		float myPrice = 0f ;
 		float rmbPrice = 0f ;
+		Map<String,List<BuyerPackage>> expressNos = new HashMap<String,List<BuyerPackage>>();
 		for(OrderDetail orderDetail:orderDetails) {
 			BuyerGoods buyerGoods = new BuyerGoods();
 			String img = productMapper.getProductImg(orderDetail.getProductId());
@@ -589,12 +592,18 @@ public class BuyerController {
 			}
 			buyerGoods.setTitle(name);
 			if(orderDetail.getStatus()==100) {
-				BuyerPackage buyerPackage = new BuyerPackage();
-				packageGoodsList.add(buyerGoods);
-				buyerPackage.setGoods_list(packageGoodsList);
-				buyerPackage.setStatus(status);
-				buyerPackage.setExpress_no(orderDetail.getExpressNo());
-				packageList.add(buyerPackage);
+				if(!expressNos.containsKey(orderDetail.getExpressNo())) {
+					List<BuyerGoods> packageGoodsList = new ArrayList<BuyerGoods>();
+					BuyerPackage buyerPackage = new BuyerPackage();
+					packageGoodsList.add(buyerGoods);
+					buyerPackage.setGoods_list(packageGoodsList);
+					buyerPackage.setStatus(status);
+					buyerPackage.setExpress_no(orderDetail.getExpressNo());
+					packageList.add(buyerPackage);
+					expressNos.put(orderDetail.getExpressNo(), packageList);
+				}else {
+					expressNos.get(orderDetail.getExpressNo()).get(0).getGoods_list().add(buyerGoods);
+				}
 			}else {
 				goodsList.add(buyerGoods);
 			}
