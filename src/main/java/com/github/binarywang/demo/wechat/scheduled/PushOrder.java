@@ -17,10 +17,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import com.github.binarywang.demo.wechat.bean.AlipayTradeMoney;
 import com.github.binarywang.demo.wechat.bean.MiniIncomeDetail;
 import com.github.binarywang.demo.wechat.bean.MiniOrder;
+import com.github.binarywang.demo.wechat.bean.MiniUser;
 import com.github.binarywang.demo.wechat.mapper.AlipayTradeMoneyMapper;
 import com.github.binarywang.demo.wechat.mapper.MiniIncomeDetailMapper;
 import com.github.binarywang.demo.wechat.mapper.MiniIncomeMapper;
 import com.github.binarywang.demo.wechat.mapper.MiniOrderMapper;
+import com.github.binarywang.demo.wechat.mapper.MiniUserMapper;
 import com.github.binarywang.demo.wechat.service.MiniIncomeDetailService;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
@@ -46,26 +48,26 @@ public class PushOrder {
 	private MiniIncomeMapper miniIncomeMapper;
 	@Autowired
 	protected WxMaService wxService;
+	@Autowired
+	private MiniUserMapper miniUserMapper;
 
 
     @Scheduled(cron = "0 0/1 * * * ?") // 每1分钟执行一次
     public void pushOrder() {
     		List<MiniOrder> miniOrders = miniOrderMapper.getMiniOrderList(10);
+    		List<String> orders = new ArrayList<String>();
     		for(MiniOrder miniOrder:miniOrders) {
     			//推送消息
     			miniOrderMapper.updateStatus(miniOrder.getId(), 0);
-    			
-    			 WxMaKefuMessage message = new WxMaKefuMessage();
-    			 message.setMsgType(WxConsts.KefuMsgType.TEXT);
-    			 message.setToUser("oAra84qw3VcLYzS2tZ2NfRgkAdiw");
-    			 KfText test = new KfText("欢迎欢迎，热烈欢迎\n换行测试\n超链接:<a href=\"http://www.baidu.com\">Hello World</a>");
-    			 message.setText(test);
-
-    			 try {
-					wxService.getMsgService().sendKefuMsg(message);
+    			if(!orders.contains(miniOrder.getOrderNo())) {
+	    			MiniUser miniUser = miniUserMapper.getUserById(miniOrder.getMiniUserId());
+				try {
+					wxService.getMsgService().sendKefuMsg(WxMaKefuMessage.newTextBuilder().content("欢迎欢迎，热烈欢迎\n换行测试\n超链接:<a href=\"http://www.baidu.com\">Hello World</a>").toUser(miniUser.getOpenId()).build());
 				} catch (WxErrorException e) {
 					e.printStackTrace();
 				}
+				orders.add(miniOrder.getOrderNo());
+    			}
     		}
         
     }

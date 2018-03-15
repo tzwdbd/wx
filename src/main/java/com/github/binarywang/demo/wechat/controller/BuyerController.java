@@ -1,7 +1,6 @@
 package com.github.binarywang.demo.wechat.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -192,7 +191,13 @@ public class BuyerController {
         accountListResponse.setUser_id(String.valueOf(userId));
       
         List<BuyerAccount> accountList = new ArrayList<BuyerAccount>();
-        List<OrderAccount> orderAccounts = orderAccountService.getAOrderAccountByAccountSource(String.valueOf(userId));
+        List<OrderAccount> orderAccounts = new ArrayList<OrderAccount>();
+        if(mallId==0) {
+        		orderAccounts= orderAccountService.getAOrderAccountByAccountSource(String.valueOf(userId));
+        }else {
+        		MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionById(mallId);
+        		orderAccounts= orderAccountService.getOrderAccountByAccountSource(String.valueOf(userId),mallDefinition.getName());
+        }
         //获取邮箱
         MiniUser miniUser =  userService.getUserById(userId);
         for(OrderAccount orderAccount:orderAccounts) {
