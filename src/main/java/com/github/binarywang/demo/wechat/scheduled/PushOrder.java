@@ -92,7 +92,7 @@ public class PushOrder {
     				BigDecimal b1 = new BigDecimal(alipayTradeMoney.getCouponValue());
     			    BigDecimal b2 = new BigDecimal(100);
     				miniIncomeDetail.setIncome(String.valueOf(b1.divide(b2, 2, 4)));
-    				miniIncomeDetail.setMiniUserId(alipayTradeMoney.getUser_id());
+    				miniIncomeDetail.setMiniUserId(alipayTradeMoney.getUserId());
     				DateFormat ymdhmsFormat = new SimpleDateFormat("yyMMddHHmmssSSS");
     				String dateStr = ymdhmsFormat.format(new Date());
     				miniIncomeDetail.setOrderNo(dateStr);

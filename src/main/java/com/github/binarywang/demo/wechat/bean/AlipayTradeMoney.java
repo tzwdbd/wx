@@ -15,7 +15,7 @@ public class AlipayTradeMoney implements Serializable{
 	private static final long serialVersionUID = -2745941150472250753L;
 	private Long id;
 	private Integer type;
-	private Long user_id;
+	private Long userId;
 	private String alipayAccount;
 	private String realName;
 	private Integer couponValue;
