@@ -91,10 +91,13 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		int  status= 14;
 		for(OrderDetail orderDetail:orderDetails) {
 			MiniOrder miniOrder = miniOrderService.getOrderDetailByOrderNoAndSkuId(orderDetail.getOrderNo(), orderDetail.getProductEntityId(),userId);
-			int tostatus = 0;
+			int tostatus = miniOrder.getStatus();
 			if(miniOrder.getStatus()<3) {
 				tostatus = miniOrder.getStatus();
 			}else {
+				if(orderDetail.getStatus() ==0 || orderDetail.getStatus()==2002) {
+					tostatus = 3;
+				}
 				if(orderDetail.getStatus()>0 && orderDetail.getStatus()<=99) {
 					tostatus=4;
 				}
