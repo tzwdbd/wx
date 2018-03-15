@@ -92,36 +92,36 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 		for(OrderDetail orderDetail:orderDetails) {
 			MiniOrder miniOrder = miniOrderService.getOrderDetailByOrderNoAndSkuId(orderDetail.getOrderNo(), orderDetail.getProductEntityId(),userId);
 			int tostatus = miniOrder.getStatus();
-			if(miniOrder.getStatus()<3) {
-				tostatus = miniOrder.getStatus();
-			}else {
-				if(orderDetail.getStatus() ==0 || orderDetail.getStatus()==2002) {
-					tostatus = 3;
-				}
-				if(orderDetail.getStatus()>0 && orderDetail.getStatus()<=99) {
-					tostatus=4;
-				}
-				if(orderDetail.getStatus()==1000) {
-					tostatus = 4;
-				}
-				if(orderDetail.getStatus() ==13 || orderDetail.getStatus() ==14) {
-					tostatus = 2;
-				}
-				if(orderDetail.getStatus()==100) {
-					tostatus = 5;
-				}
-				if(miniOrder.getStatus()==6) {
-					tostatus = 6;
-					//物流
-					Integer expressStatus = userTradeExpressMapper.getUserTradeExpressByOrderNo(orderDetail.getOrderNo());
-					if(expressStatus!=null && expressStatus>3) {
-						tostatus = 7;
-						if(expressStatus==14) {
-							tostatus = 14;
-						}
-					}
-				}
-			}
+//			if(miniOrder.getStatus()<3) {
+//				tostatus = miniOrder.getStatus();
+//			}else {
+//				if(orderDetail.getStatus() ==0 || orderDetail.getStatus()==2002) {
+//					tostatus = 3;
+//				}
+//				if(orderDetail.getStatus()>0 && orderDetail.getStatus()<=99) {
+//					tostatus=4;
+//				}
+//				if(orderDetail.getStatus()==1000) {
+//					tostatus = 4;
+//				}
+//				if(orderDetail.getStatus() ==13 || orderDetail.getStatus() ==14) {
+//					tostatus = 2;
+//				}
+//				if(orderDetail.getStatus()==100) {
+//					tostatus = 5;
+//				}
+//				if(miniOrder.getStatus()==6) {
+//					tostatus = 6;
+//					//物流
+//					Integer expressStatus = userTradeExpressMapper.getUserTradeExpressByOrderNo(orderDetail.getOrderNo());
+//					if(expressStatus!=null && expressStatus>3) {
+//						tostatus = 7;
+//						if(expressStatus==14) {
+//							tostatus = 14;
+//						}
+//					}
+//				}
+//			}
 			if(status>tostatus) {
 				status = tostatus;
 			}
