@@ -62,7 +62,7 @@ public class PushOrder {
     			if(!orders.contains(miniOrder.getOrderNo())) {
 	    			MiniUser miniUser = miniUserMapper.getUserById(miniOrder.getMiniUserId());
 				try {
-					wxService.getMsgService().sendKefuMsg(WxMaKefuMessage.newTextBuilder().content("欢迎欢迎，热烈欢迎\n换行测试\n超链接:<a href=\"http://www.baidu.com\">Hello World</a>").toUser(miniUser.getOpenId()).build());
+					wxService.getMsgService().sendKefuMsg(WxMaKefuMessage.newTextBuilder().content("收到商城"+miniOrder.getSiteName()+"的订单").toUser(miniUser.getOpenId()).build());
 				} catch (WxErrorException e) {
 					e.printStackTrace();
 				}
