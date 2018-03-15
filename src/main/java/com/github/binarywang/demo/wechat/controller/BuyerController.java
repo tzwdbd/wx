@@ -260,9 +260,9 @@ public class BuyerController {
         
         OrderAccount orderAccount = orderAccountService.getOrderAccountByAccountId(Integer.parseInt(useAccountRequest.getAccount_id()));
         if("0".equals(useAccountRequest.getStatus())) {
-        		orderAccount.setStatus(1);
-        }else if("1".equals(useAccountRequest.getStatus())) {
         		orderAccount.setStatus(0);
+        }else if("1".equals(useAccountRequest.getStatus())) {
+        		orderAccount.setStatus(1);
         }
         orderAccountService.updateOrderAccount(orderAccount);
         UseAccountResponse useAccountResponse = new UseAccountResponse();
