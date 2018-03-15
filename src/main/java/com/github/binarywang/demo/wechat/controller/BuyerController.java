@@ -61,6 +61,7 @@ import com.github.binarywang.demo.wechat.service.MiniUserService;
 import com.github.binarywang.demo.wechat.service.OrderAccountService;
 import com.github.binarywang.demo.wechat.service.OrderDetailService;
 import com.github.binarywang.demo.wechat.utils.JsonUtils;
+import com.github.binarywang.demo.wechat.utils.PriceUtils;
 import com.github.binarywang.demo.wechat.utils.ThreeDES;
 import com.google.gson.Gson;
 
@@ -109,11 +110,11 @@ public class BuyerController {
         	indexResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
         	indexResponse.setUser_id(String.valueOf(userId));
         	IncomeInfo income = new IncomeInfo();
-        	income.setCan_presented(String.valueOf(miniIncome.getCanPresented()));
-        	income.setAlready_presented(String.valueOf(miniIncome.getAlreadyPresented()));
-        	income.setDeduct(String.valueOf(miniIncome.getDeduct()));
-        	income.setExpect_presented(String.valueOf(miniIncome.getExpectPresented()));
-        	income.setAmount(String.valueOf(miniIncome.getAlreadyPresented()+miniIncome.getCanPresented()+miniIncome.getExpectPresented()-miniIncome.getDeduct()));
+        	income.setCan_presented(String.valueOf(PriceUtils.fen2Yuan(miniIncome.getCanPresented())));
+        	income.setAlready_presented(String.valueOf(PriceUtils.fen2Yuan(miniIncome.getAlreadyPresented())));
+        	income.setDeduct(String.valueOf(PriceUtils.fen2Yuan(miniIncome.getDeduct())));
+        	income.setExpect_presented(String.valueOf(PriceUtils.fen2Yuan(miniIncome.getExpectPresented())));
+        	income.setAmount(String.valueOf(PriceUtils.fen2Yuan(miniIncome.getAlreadyPresented()+miniIncome.getCanPresented()+miniIncome.getExpectPresented()-miniIncome.getDeduct())));
         	indexResponse.setIncome(income);
         	List<MiniOrder> miniOrders = miniOrderService.getMiniOrderList(1, null, userId,null,10000);
         	indexResponse.setUnauth_num(String.valueOf(miniOrders.size()));
@@ -483,8 +484,7 @@ public class BuyerController {
         for(MiniIncomeDetail miniIncomeDetail:miniIncomeDetails) {
         		IncomeDetailInfo incomeDetailInfo = new IncomeDetailInfo();
         		incomeDetailInfo.setDate(String.valueOf(miniIncomeDetail.getGmtModified().getTime()));
-        		BigDecimal yuan =  new BigDecimal(miniIncomeDetail.getIncome()).divide(new BigDecimal("100"),2);
-        		incomeDetailInfo.setIncome(String.valueOf(yuan));
+        		incomeDetailInfo.setIncome(PriceUtils.fen2Yuan(Integer.parseInt(miniIncomeDetail.getIncome())));
         		incomeDetailInfo.setOrder_no(miniIncomeDetail.getOrderNo());
         		incomeDetailInfo.setTitle(miniIncomeDetail.getTitle());
         		incomeDetailInfo.setType(String.valueOf(miniIncomeDetail.getType()));
@@ -508,8 +508,7 @@ public class BuyerController {
         String name = applyCashRequest.getReally_name();
         String type = applyCashRequest.getType();
         MiniIncome miniIncome = miniIncomeService.getMiniIncomeByUserId(userId);
-        BigDecimal fen =  new BigDecimal(amount).multiply(new BigDecimal("100"));
-        int coupon = fen.intValue();
+        int coupon =  Integer.parseInt(PriceUtils.yuan2Fen(amount));
         ApplyCashResponse applyCashResponse = new ApplyCashResponse();
         if(miniIncome.getCanPresented()>=coupon) {
         		int num = miniIncomeService.updateCanPresented(userId, coupon);
