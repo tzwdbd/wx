@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.binarywang.demo.wechat.bean.AlipayTradeMoney;
 import com.github.binarywang.demo.wechat.bean.MallDefinition;
+import com.github.binarywang.demo.wechat.bean.MiniForm;
 import com.github.binarywang.demo.wechat.bean.MiniIncome;
 import com.github.binarywang.demo.wechat.bean.MiniIncomeDetail;
 import com.github.binarywang.demo.wechat.bean.MiniOrder;
@@ -26,11 +27,13 @@ import com.github.binarywang.demo.wechat.bean.OrderAccount;
 import com.github.binarywang.demo.wechat.bean.OrderDetail;
 import com.github.binarywang.demo.wechat.exception.ProcessStatusCode;
 import com.github.binarywang.demo.wechat.mapper.AlipayTradeMoneyMapper;
+import com.github.binarywang.demo.wechat.mapper.MiniFormMapper;
 import com.github.binarywang.demo.wechat.mapper.ProductMapper;
 import com.github.binarywang.demo.wechat.request.AccountListRequest;
 import com.github.binarywang.demo.wechat.request.ApplyCashRequest;
 import com.github.binarywang.demo.wechat.request.BuyerAccount;
 import com.github.binarywang.demo.wechat.request.ConfirmCodeRequest;
+import com.github.binarywang.demo.wechat.request.FormRequest;
 import com.github.binarywang.demo.wechat.request.IncomeDetailRequest;
 import com.github.binarywang.demo.wechat.request.Mall;
 import com.github.binarywang.demo.wechat.request.OperationRequest;
@@ -43,6 +46,7 @@ import com.github.binarywang.demo.wechat.response.ApplyCashResponse;
 import com.github.binarywang.demo.wechat.response.BuyerExpressNode;
 import com.github.binarywang.demo.wechat.response.BuyerGoods;
 import com.github.binarywang.demo.wechat.response.BuyerPackage;
+import com.github.binarywang.demo.wechat.response.CommonResponse;
 import com.github.binarywang.demo.wechat.response.ConfirmAuthResponse;
 import com.github.binarywang.demo.wechat.response.ConfirmCodeResponse;
 import com.github.binarywang.demo.wechat.response.GetCreateResponse;
@@ -94,6 +98,8 @@ public class BuyerController {
     private MiniIncomeDetailService miniIncomeDetailService;
     @Autowired
     private AlipayTradeMoneyMapper alipayTradeMoneyMapper;
+    @Autowired
+    private MiniFormMapper miniFormMapper;
 
     /**
      * 首页
@@ -542,6 +548,28 @@ public class BuyerController {
         }
         
         return JsonUtils.toJson(applyCashResponse);
+    }
+    
+    /**
+     * postform
+     */
+    @PostMapping("postform")
+    public String getForm(@RequestBody FormRequest formRequest) {
+        if (StringUtils.isBlank(formRequest.getHaihu_session())) {
+            return "empty session";
+        }
+        Long userId = Long.parseLong(ThreeDES.decryptMode(formRequest.getHaihu_session()));
+        String fromId = formRequest.getForm_id();
+        MiniForm miniForm =new MiniForm();
+        miniForm.setFormId(fromId);
+        miniForm.setMiniUserId(userId);
+        miniForm.setStatus(0);
+        miniFormMapper.add(miniForm);
+        CommonResponse commonResponse = new CommonResponse();
+        commonResponse.setHaihu_session(formRequest.getHaihu_session());
+        commonResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
+        commonResponse.setUser_id(String.valueOf(userId));
+        return JsonUtils.toJson(commonResponse);
     }
     
     public static String getSku(String value) {

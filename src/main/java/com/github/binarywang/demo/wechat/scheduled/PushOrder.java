@@ -15,10 +15,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.github.binarywang.demo.wechat.bean.AlipayTradeMoney;
+import com.github.binarywang.demo.wechat.bean.MiniForm;
 import com.github.binarywang.demo.wechat.bean.MiniIncomeDetail;
 import com.github.binarywang.demo.wechat.bean.MiniOrder;
 import com.github.binarywang.demo.wechat.bean.MiniUser;
 import com.github.binarywang.demo.wechat.mapper.AlipayTradeMoneyMapper;
+import com.github.binarywang.demo.wechat.mapper.MiniFormMapper;
 import com.github.binarywang.demo.wechat.mapper.MiniIncomeDetailMapper;
 import com.github.binarywang.demo.wechat.mapper.MiniIncomeMapper;
 import com.github.binarywang.demo.wechat.mapper.MiniOrderMapper;
@@ -52,6 +54,8 @@ public class PushOrder {
 	protected WxMaService wxService;
 	@Autowired
 	private MiniUserMapper miniUserMapper;
+	@Autowired
+	private MiniFormMapper miniFormMapper;
 
 
     @Scheduled(cron = "0 0/1 * * * ?") // 每1分钟执行一次
@@ -63,19 +67,23 @@ public class PushOrder {
     			miniOrderMapper.updateStatus(miniOrder.getId(), 0);
     			if(!orders.contains(miniOrder.getOrderNo())) {
 	    			MiniUser miniUser = miniUserMapper.getUserById(miniOrder.getMiniUserId());
-				try {
-					wxService.getMsgService().sendTemplateMsg(WxMaTemplateMessage.builder()
-                    .templateId("N916r-hHmRpJNpnCe2oxO_rpA5OhSj5SE2P62ZOpMx4")
-                    .formId("自己替换可用的formid")
-                    .data(Lists.newArrayList(
-                            new WxMaTemplateMessage.Data("keyword1", "收到商城"+miniOrder.getSiteName()+"的订单", "#173177")))
-                    .toUser(miniUser.getOpenId())
-                    .page("index")
-                    .build());
-					//(WxMaKefuMessage.newTextBuilder().content("收到商城"+miniOrder.getSiteName()+"的订单<a href=\"http://www.qq.com\" data-miniprogram-appid=\"wx84cc48c8ddcf5e08\" data-miniprogram-path=\"pages/index/index\">点击跳小程序</a>").toUser(miniUser.getOpenId()).build());
-				} catch (WxErrorException e) {
-					e.printStackTrace();
-				}
+	    			MiniForm miniForm = miniFormMapper.getMiniForm(miniOrder.getMiniUserId());
+	    			if(miniForm!=null) {
+		    			miniFormMapper.update(miniForm.getId());
+					try {
+						wxService.getMsgService().sendTemplateMsg(WxMaTemplateMessage.builder()
+	                    .templateId("N916r-hHmRpJNpnCe2oxO_rpA5OhSj5SE2P62ZOpMx4")
+	                    .formId(miniForm.getFormId())
+	                    .data(Lists.newArrayList(
+	                            new WxMaTemplateMessage.Data("keyword1", "收到商城"+miniOrder.getSiteName()+"的订单", "#173177")))
+	                    .toUser(miniUser.getOpenId())
+	                    .page("pages/buyer/index")
+	                    .build());
+						//(WxMaKefuMessage.newTextBuilder().content("收到商城"+miniOrder.getSiteName()+"的订单<a href=\"http://www.qq.com\" data-miniprogram-appid=\"wx84cc48c8ddcf5e08\" data-miniprogram-path=\"pages/index/index\">点击跳小程序</a>").toUser(miniUser.getOpenId()).build());
+					} catch (WxErrorException e) {
+						e.printStackTrace();
+					}
+	    			}
 				orders.add(miniOrder.getOrderNo());
     			}
     		}
