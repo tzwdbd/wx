@@ -240,6 +240,7 @@ public class BuyerController {
 	    			e.printStackTrace();
 	    		}
         }
+        orderAccount.setStatus(2);
         orderAccountService.updateOrderAccount(orderAccount);
         AccountResponse accountResponse = new AccountResponse();
         accountResponse.setHaihu_session(buyerAccount.getHaihu_session());
