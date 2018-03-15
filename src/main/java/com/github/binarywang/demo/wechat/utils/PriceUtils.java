@@ -24,7 +24,11 @@ public class PriceUtils {
 	public static String yuan2Fen(String yuan) {
 		 BigDecimal b1 = new BigDecimal(yuan);
 		 BigDecimal b2 = new BigDecimal("100");
-		 return String.valueOf(b1.multiply(b2));
+		 return String.valueOf(b1.multiply(b2).intValue());
+	}
+	
+	public static void main(String[] arg0) {
+		System.out.println(yuan2Fen("56.00"));
 	}
 	
 
