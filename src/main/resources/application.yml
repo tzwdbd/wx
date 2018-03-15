@@ -1,5 +1,6 @@
 debug: true
 logging:
+  path: /home/www/logs/oversea/mini
   level:
     org.springframework.web: DEBUG
     com.github.binarywang.demo.wechat: DEBUG
