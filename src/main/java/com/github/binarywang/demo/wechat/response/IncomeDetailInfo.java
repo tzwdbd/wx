@@ -15,5 +15,6 @@ public class IncomeDetailInfo implements Serializable{
 	private String order_no;
 	private String income;
 	private String type;
+	private String status;
 
 }

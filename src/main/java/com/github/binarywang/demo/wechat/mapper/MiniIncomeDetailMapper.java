@@ -14,7 +14,7 @@ import com.github.binarywang.demo.wechat.bean.MiniIncomeDetail;
  */
 public interface MiniIncomeDetailMapper {
 
-	@Select("SELECT * FROM oversea.mini_income_detail WHERE mini_user_id = #{miniUserId} and status =1 limit #{pageNo},#{pageSize}")
+	@Select("SELECT * FROM oversea.mini_income_detail WHERE mini_user_id = #{miniUserId} limit #{pageNo},#{pageSize}")
 	List<MiniIncomeDetail> getMiniIncomeDetailByUserId(@Param("miniUserId") Long userId,@Param("pageNo")int pageNo,@Param("pageSize")int pageSize);
 
 	@Insert("insert into oversea.mini_income_detail(mini_user_id, order_no,type,income,title,gmt_create,gmt_modified,status) values(#{miniIncomeDetail.miniUserId}, #{miniIncomeDetail.orderNo}, #{miniIncomeDetail.type}, #{miniIncomeDetail.income},#{miniIncomeDetail.title}, now(),now(),0)")

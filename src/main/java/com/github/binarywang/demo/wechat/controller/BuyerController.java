@@ -496,6 +496,7 @@ public class BuyerController {
         		incomeDetailInfo.setOrder_no(miniIncomeDetail.getOrderNo());
         		incomeDetailInfo.setTitle(miniIncomeDetail.getTitle());
         		incomeDetailInfo.setType(String.valueOf(miniIncomeDetail.getType()));
+        		incomeDetailInfo.setStatus(String.valueOf(miniIncomeDetail.getStatus()));
         		incomeDetailInfos.add(incomeDetailInfo);
         }
         incomeDetailResponse.setIncome_detail_list(incomeDetailInfos);
