@@ -520,7 +520,8 @@ public class BuyerController {
 	            alipayTradeMoney.setGmtCreate(new Date());
 	            alipayTradeMoney.setGmtModified(new Date());
 	            alipayTradeMoney.setType(2);
-	            alipayTradeMoney.setUserId(userId);;
+	            alipayTradeMoney.setUserId(userId);
+	            alipayTradeMoney.setCouponValue(coupon);
 	            alipayTradeMoneyMapper.add(alipayTradeMoney);
 	           
 	            applyCashResponse.setHaihu_session(applyCashRequest.getHaihu_session());
