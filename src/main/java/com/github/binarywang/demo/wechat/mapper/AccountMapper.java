@@ -26,7 +26,7 @@ public interface AccountMapper {
 	@Select("SELECT * FROM automan.order_account_new WHERE account_source = #{accountSource} and account_type = #{accountType}")
 	List<OrderAccount> getOrderAccountByAccountSource(@Param("accountSource")String accountSource, @Param("accountType") String accountType);
 	
-	@Update("UPDATE automan.order_account_new SET pay_account = #{orderAccount.payAccount} , login_pwd = #{orderAccount.loginPwd} WHERE account_id = #{orderAccount.accountId}")
+	@Update("UPDATE automan.order_account_new SET pay_account = #{orderAccount.payAccount} , login_pwd = #{orderAccount.loginPwd}, status = #{orderAccount.status} WHERE account_id = #{orderAccount.accountId}")
 	public int updateOrderAccount(@Param("orderAccount") OrderAccount orderAccount);
 	
 	@Select("SELECT * FROM automan.order_account_new WHERE account_source = #{accountSource}")
