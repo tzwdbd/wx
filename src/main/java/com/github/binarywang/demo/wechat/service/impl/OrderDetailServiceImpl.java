@@ -79,6 +79,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 				}else {
 					miniOrderService.updateStatus(miniOrder.getId(), status);
 				}
+			}else {
+				status = miniOrder.getStatus();
 			}
 		}
 		return String.valueOf(status);
