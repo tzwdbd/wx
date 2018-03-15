@@ -19,7 +19,7 @@ public interface AccountMapper {
 	@Select("SELECT * FROM automan.order_account_new WHERE account_id = #{accountId}")
 	OrderAccount getAccoutIdByAccoutId(@Param("accountId") Integer accountId);
 
-	@Insert("insert into automan.order_account_new(account_type,pay_account, login_pwd,status) values(#{orderAccount.accountType},#{orderAccount.payAccount}, #{orderAccount.loginPwd}, #{orderAccount.status})")
+	@Insert("insert into automan.order_account_new(account_type,pay_account, login_pwd,status,create_time,modify_time,device_id,effective_time) values(#{orderAccount.accountType},#{orderAccount.payAccount}, #{orderAccount.loginPwd}, #{orderAccount.status},now(),now(),0,now())")
 	@Options(useGeneratedKeys=true,keyProperty="orderAccount.accountId")
 	public int add(@Param("orderAccount") OrderAccount orderAccount);
 

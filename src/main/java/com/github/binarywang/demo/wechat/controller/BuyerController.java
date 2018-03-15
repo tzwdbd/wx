@@ -436,7 +436,7 @@ public class BuyerController {
         		for(OrderDetail orderDetail:orderDetails) {
         			MiniOrder miniOrder = miniOrderService.getOrderDetailByOrderNoAndSkuId(orderDetail.getOrderNo(), orderDetail.getProductEntityId(),userId);
         			if(miniOrder!=null) {
-        				int num = miniOrderService.updateMiniOrderById(miniOrder.getId(), 3, 6);
+        				int num = miniOrderService.updateMiniOrderById(miniOrder.getId(), 5, 6);
         				if(num>0) {
         					success=ProcessStatusCode.PROCESS_SUCCESS.getCode();
         				}
@@ -445,9 +445,9 @@ public class BuyerController {
         }
       //算收益
         if(success.equals(ProcessStatusCode.PROCESS_SUCCESS.getCode())) {
-			miniIncomeService.updateExpectPresented(userId, 5);
+			miniIncomeService.updateExpectPresented(userId, 500);
 			MiniIncomeDetail miniIncomeDetail = new MiniIncomeDetail();
-			miniIncomeDetail.setIncome("5");
+			miniIncomeDetail.setIncome("500");//fen
 			miniIncomeDetail.setMiniUserId(userId);
 			miniIncomeDetail.setOrderNo(orderDetails.get(0).getOrderNo());
 			miniIncomeDetail.setTitle(orderDetails.get(0).getSiteName());
@@ -483,7 +483,8 @@ public class BuyerController {
         for(MiniIncomeDetail miniIncomeDetail:miniIncomeDetails) {
         		IncomeDetailInfo incomeDetailInfo = new IncomeDetailInfo();
         		incomeDetailInfo.setDate(String.valueOf(miniIncomeDetail.getGmtModified().getTime()));
-        		incomeDetailInfo.setIncome(miniIncomeDetail.getIncome());
+        		BigDecimal yuan =  new BigDecimal(miniIncomeDetail.getIncome()).divide(new BigDecimal("100"),2);
+        		incomeDetailInfo.setIncome(String.valueOf(yuan));
         		incomeDetailInfo.setOrder_no(miniIncomeDetail.getOrderNo());
         		incomeDetailInfo.setTitle(miniIncomeDetail.getTitle());
         		incomeDetailInfo.setType(String.valueOf(miniIncomeDetail.getType()));
