@@ -626,7 +626,6 @@ public class BuyerController {
 
     private List<Mall> getMallList() {
     		List<Mall> malls = new ArrayList<Mall>();
-    		/*TODO*/
         List<MallDefinition> mallDefinitions = mallDefinitionService.getMallDefinitionList("106,119");
         for(MallDefinition m:mallDefinitions) {
         		Mall mall = 	getMall(m);
