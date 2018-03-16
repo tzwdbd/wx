@@ -118,11 +118,11 @@ public class BuyerController {
         	indexResponse.setStatus(ProcessStatusCode.PROCESS_SUCCESS.getCode());
         	indexResponse.setUser_id(String.valueOf(userId));
         	IncomeInfo income = new IncomeInfo();
-        	income.setCan_presented("¥"+String.valueOf(PriceUtils.fen2Yuan(miniIncome.getCanPresented())));
-        	income.setAlready_presented("¥"+String.valueOf(PriceUtils.fen2Yuan(miniIncome.getAlreadyPresented())));
-        	income.setDeduct("¥"+String.valueOf(PriceUtils.fen2Yuan(miniIncome.getDeduct())));
-        	income.setExpect_presented("¥"+String.valueOf(PriceUtils.fen2Yuan(miniIncome.getExpectPresented())));
-        	income.setAmount("¥"+String.valueOf(PriceUtils.fen2Yuan(miniIncome.getAlreadyPresented()+miniIncome.getCanPresented()+miniIncome.getExpectPresented()-miniIncome.getDeduct())));
+        	income.setCan_presented(String.valueOf(PriceUtils.fen2Yuan(miniIncome.getCanPresented())));
+        	income.setAlready_presented(String.valueOf(PriceUtils.fen2Yuan(miniIncome.getAlreadyPresented())));
+        	income.setDeduct(String.valueOf(PriceUtils.fen2Yuan(miniIncome.getDeduct())));
+        	income.setExpect_presented(String.valueOf(PriceUtils.fen2Yuan(miniIncome.getExpectPresented())));
+        	income.setAmount(String.valueOf(PriceUtils.fen2Yuan(miniIncome.getAlreadyPresented()+miniIncome.getCanPresented()+miniIncome.getExpectPresented()-miniIncome.getDeduct())));
         	indexResponse.setIncome(income);
         	List<MiniOrder> miniOrders = miniOrderService.getMiniOrderList(1, null, userId,null,10000);
         	indexResponse.setUnauth_num(String.valueOf(miniOrders.size()));
