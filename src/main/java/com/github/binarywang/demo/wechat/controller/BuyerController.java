@@ -708,6 +708,10 @@ public class BuyerController {
         		Mall mall = 	getMall(m);
         		malls.add(mall);
         }
+        Mall mall = new Mall();
+        mall.setMall("全部");
+        mall.setMall_id("0");
+        malls.add(mall);
         return malls;
 	}
     

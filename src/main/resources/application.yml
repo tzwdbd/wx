@@ -15,9 +15,9 @@ wechat:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://122.225.114.21/spider
-    username: osspider
-    password: osspider!@#*()
+    url: jdbc:mysql://122.225.114.20/automan
+    username: dev
+    password: dev@)#)
 mybatis:
   type-aliases-package: com.github.binarywang.demo.wechat.bean
   configuration:
