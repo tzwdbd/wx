@@ -461,8 +461,11 @@ public class BuyerController {
         		status=ProcessStatusCode.PROCESS_SUCCESS.getCode();
         		MiniUser miniUser = userService.getUserById(userId);
         		MiniForm miniForm = miniFormMapper.getMiniForm(userId);
-        		List<OrderDetail> orderDetails = orderDetailService.getOrderDetailList(orderNo);
-        		orderDetailService.sendMsg(miniUser.getOpenId(), miniForm.getFormId(), orderDetails.get(0).getSiteName());
+        		if(miniForm!=null) {
+        			List<OrderDetail> orderDetails = orderDetailService.getOrderDetailList(orderNo);
+	    			miniFormMapper.update(miniForm.getId());
+	    			orderDetailService.sendMsg(miniUser.getOpenId(), miniForm.getFormId(), orderDetails.get(0).getSiteName());
+    			}
         }
         confirmAuthResponse.setHaihu_session(orderDetailRequest.getHaihu_session());
         confirmAuthResponse.setStatus(status);
