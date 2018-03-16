@@ -73,7 +73,7 @@ public class PushOrder {
 	    			MiniForm miniForm = miniFormMapper.getMiniForm(miniOrder.getMiniUserId());
 	    			if(miniForm!=null) {
 		    			miniFormMapper.update(miniForm.getId());
-		    			orderDetailService.sendMsg(miniUser.getOpenId(), miniForm.getFormId(), miniOrder.getSiteName());
+		    			orderDetailService.sendMsg(miniUser.getOpenId(), miniForm.getFormId(), "收到商城"+miniOrder.getSiteName()+"的订单");
 	    			}
 				orders.add(miniOrder.getOrderNo());
     			}

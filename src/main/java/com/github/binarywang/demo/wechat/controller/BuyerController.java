@@ -464,7 +464,7 @@ public class BuyerController {
         		if(miniForm!=null) {
         			List<OrderDetail> orderDetails = orderDetailService.getOrderDetailList(orderNo);
 	    			miniFormMapper.update(miniForm.getId());
-	    			orderDetailService.sendMsg(miniUser.getOpenId(), miniForm.getFormId(), orderDetails.get(0).getSiteName());
+	    			orderDetailService.sendMsg(miniUser.getOpenId(), miniForm.getFormId(), "商城"+orderDetails.get(0).getSiteName()+"的订单正在下单");
     			}
         }
         confirmAuthResponse.setHaihu_session(orderDetailRequest.getHaihu_session());

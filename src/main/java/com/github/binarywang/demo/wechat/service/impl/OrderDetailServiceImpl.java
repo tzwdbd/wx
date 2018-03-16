@@ -143,7 +143,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             .templateId("N916r-hHmRpJNpnCe2oxO_rpA5OhSj5SE2P62ZOpMx4")
             .formId(formId)
             .data(Lists.newArrayList(
-                    new WxMaTemplateMessage.Data("keyword1", "收到商城"+name+"的订单", "#173177")))
+                    new WxMaTemplateMessage.Data("keyword1", name, "#173177")))
             .toUser(openId)
             .page("pages/buyer/index")
             .build());
