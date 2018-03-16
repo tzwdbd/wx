@@ -16,5 +16,7 @@ public interface OrderDetailService {
 	
 	String getStatus(OrderDetail orderDetail,Long userId);
 	String getStatus(List<OrderDetail> orderDetails,Long userId);
+	
+	void sendMsg(String openId,String formId,String name);
 
 }

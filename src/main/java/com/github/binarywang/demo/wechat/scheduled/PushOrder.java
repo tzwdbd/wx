@@ -26,6 +26,7 @@ import com.github.binarywang.demo.wechat.mapper.MiniIncomeMapper;
 import com.github.binarywang.demo.wechat.mapper.MiniOrderMapper;
 import com.github.binarywang.demo.wechat.mapper.MiniUserMapper;
 import com.github.binarywang.demo.wechat.service.MiniIncomeDetailService;
+import com.github.binarywang.demo.wechat.service.OrderDetailService;
 import com.google.common.collect.Lists;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
@@ -56,6 +57,8 @@ public class PushOrder {
 	private MiniUserMapper miniUserMapper;
 	@Autowired
 	private MiniFormMapper miniFormMapper;
+	@Autowired
+	private OrderDetailService orderDetailService;
 
 
     @Scheduled(cron = "0 0/1 * * * ?") // 每1分钟执行一次
@@ -70,19 +73,7 @@ public class PushOrder {
 	    			MiniForm miniForm = miniFormMapper.getMiniForm(miniOrder.getMiniUserId());
 	    			if(miniForm!=null) {
 		    			miniFormMapper.update(miniForm.getId());
-					try {
-						wxService.getMsgService().sendTemplateMsg(WxMaTemplateMessage.builder()
-	                    .templateId("N916r-hHmRpJNpnCe2oxO_rpA5OhSj5SE2P62ZOpMx4")
-	                    .formId(miniForm.getFormId())
-	                    .data(Lists.newArrayList(
-	                            new WxMaTemplateMessage.Data("keyword1", "收到商城"+miniOrder.getSiteName()+"的订单", "#173177")))
-	                    .toUser(miniUser.getOpenId())
-	                    .page("pages/buyer/index")
-	                    .build());
-						//(WxMaKefuMessage.newTextBuilder().content("收到商城"+miniOrder.getSiteName()+"的订单<a href=\"http://www.qq.com\" data-miniprogram-appid=\"wx84cc48c8ddcf5e08\" data-miniprogram-path=\"pages/index/index\">点击跳小程序</a>").toUser(miniUser.getOpenId()).build());
-					} catch (WxErrorException e) {
-						e.printStackTrace();
-					}
+		    			orderDetailService.sendMsg(miniUser.getOpenId(), miniForm.getFormId(), miniOrder.getSiteName());
 	    			}
 				orders.add(miniOrder.getOrderNo());
     			}

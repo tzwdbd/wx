@@ -11,6 +11,11 @@ import com.github.binarywang.demo.wechat.mapper.OrderDetailMapper;
 import com.github.binarywang.demo.wechat.mapper.UserTradeExpressMapper;
 import com.github.binarywang.demo.wechat.service.MiniOrderService;
 import com.github.binarywang.demo.wechat.service.OrderDetailService;
+import com.google.common.collect.Lists;
+
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
+import me.chanjar.weixin.common.exception.WxErrorException;
 /**
  * @author liuxf
  */
@@ -23,6 +28,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 	private MiniOrderService miniOrderService;
 	@Autowired
 	private UserTradeExpressMapper userTradeExpressMapper;
+	@Autowired
+	protected WxMaService wxService;
 
 	@Override
 	public OrderDetail getOrderDetailByOrderNoAndSkuId(String orderNo, Long productEntityId) {
@@ -127,6 +134,24 @@ public class OrderDetailServiceImpl implements OrderDetailService {
 			}
 		}
 		return String.valueOf(status);
+	}
+
+	@Override
+	public void sendMsg(String openId, String formId,String name) {
+		try {
+			wxService.getMsgService().sendTemplateMsg(WxMaTemplateMessage.builder()
+            .templateId("N916r-hHmRpJNpnCe2oxO_rpA5OhSj5SE2P62ZOpMx4")
+            .formId(formId)
+            .data(Lists.newArrayList(
+                    new WxMaTemplateMessage.Data("keyword1", "收到商城"+name+"的订单", "#173177")))
+            .toUser(openId)
+            .page("pages/buyer/index")
+            .build());
+			//(WxMaKefuMessage.newTextBuilder().content("收到商城"+miniOrder.getSiteName()+"的订单<a href=\"http://www.qq.com\" data-miniprogram-appid=\"wx84cc48c8ddcf5e08\" data-miniprogram-path=\"pages/index/index\">点击跳小程序</a>").toUser(miniUser.getOpenId()).build());
+		} catch (WxErrorException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 

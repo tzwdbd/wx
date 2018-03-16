@@ -42,6 +42,7 @@ import com.github.binarywang.demo.wechat.request.OrderListRequest;
 import com.github.binarywang.demo.wechat.request.UseAccountRequest;
 import com.github.binarywang.demo.wechat.response.AccountListResponse;
 import com.github.binarywang.demo.wechat.response.AccountResponse;
+import com.github.binarywang.demo.wechat.response.Agreement;
 import com.github.binarywang.demo.wechat.response.ApplyCashResponse;
 import com.github.binarywang.demo.wechat.response.BuyerExpressNode;
 import com.github.binarywang.demo.wechat.response.BuyerGoods;
@@ -177,6 +178,37 @@ public class BuyerController {
         
         List<Mall> malls = getMallList();
         getCreateResponse.setMall_list(malls);
+        getCreateResponse.setAgreement_title("海狐授权协议");
+        List<Agreement> agreemens = new ArrayList<Agreement>();
+        Agreement agreemen = new Agreement();
+        agreemen.setPoint("1");
+        agreemen.setDesc("在账号状态有效的情况下，同意海狐海淘通过此账号，在商城进行下单并代管订单；");
+        agreemens.add(agreemen);
+        Agreement agreemen2 = new Agreement();
+        agreemen2.setPoint("2");
+        agreemen2.setDesc("每一笔订单需要经过“确认授权”操作后，才会在商城下单；");
+        agreemens.add(agreemen2);
+        Agreement agreemen3 = new Agreement();
+        agreemen3.setPoint("3");
+        agreemen3.setDesc("每一笔订单以订单实付金额，按照比例获得佣金收益；订单在转运仓取件后给出预估收益，在海狐用户最终确认收货后可申请提现；");
+        agreemens.add(agreemen3);
+        Agreement agreemen4 = new Agreement();
+        agreemen4.setPoint("4");
+        agreemen4.setDesc("如遇到用户退款或部分退款，相应的收益金额会从收益中扣除；系统下单失败的订单没有收益；");
+        agreemens.add(agreemen4);
+        Agreement agreemen5 = new Agreement();
+        agreemen5.setPoint("5");
+        agreemen5.setDesc("买手有义务协助海狐签收订单包裹，并协助转运仓收入包裹；");
+        agreemens.add(agreemen5);
+        Agreement agreemen6 = new Agreement();
+        agreemen6.setPoint("6");
+        agreemen6.setDesc("在合作期间买手需要无条件配合海狐海淘处理售后和相关问题。如果停止使用，需要配合处理没有完结的订单，直到所有的订单完结；");
+        agreemens.add(agreemen6);
+        Agreement agreemen7 = new Agreement();
+        agreemen7.setPoint("7");
+        agreemen7.setDesc("最终解释权归海狐海淘所有。");
+        agreemens.add(agreemen7);
+        getCreateResponse.setAgreement_list(agreemens);
         return JsonUtils.toJson(getCreateResponse);
     }
     
@@ -427,6 +459,10 @@ public class BuyerController {
         int num = miniOrderService.updateMiniOrderByOrder(orderNo, 0, 3);
         if(num>0) {
         		status=ProcessStatusCode.PROCESS_SUCCESS.getCode();
+        		MiniUser miniUser = userService.getUserById(userId);
+        		MiniForm miniForm = miniFormMapper.getMiniForm(userId);
+        		List<OrderDetail> orderDetails = orderDetailService.getOrderDetailList(orderNo);
+        		orderDetailService.sendMsg(miniUser.getOpenId(), miniForm.getFormId(), orderDetails.get(0).getSiteName());
         }
         confirmAuthResponse.setHaihu_session(orderDetailRequest.getHaihu_session());
         confirmAuthResponse.setStatus(status);
@@ -460,9 +496,9 @@ public class BuyerController {
         }
       //算收益
         if(success.equals(ProcessStatusCode.PROCESS_SUCCESS.getCode())) {
-			miniIncomeService.updateExpectPresented(userId, 500);
+			miniIncomeService.updateExpectPresented(userId, 3000);
 			MiniIncomeDetail miniIncomeDetail = new MiniIncomeDetail();
-			miniIncomeDetail.setIncome("500");//fen
+			miniIncomeDetail.setIncome("3000");//fen
 			miniIncomeDetail.setMiniUserId(userId);
 			miniIncomeDetail.setOrderNo(orderDetails.get(0).getOrderNo());
 			miniIncomeDetail.setTitle(orderDetails.get(0).getSiteName());
@@ -643,7 +679,7 @@ public class BuyerController {
 		orderInfo.setGoods_list(goodsList);
 		orderInfo.setPackage_list(packageList);
 		orderInfo.setMall_no(orderDetails.get(0).getMallOrderNo());
-		orderInfo.setIncome("¥5");
+		orderInfo.setIncome("¥30");
 		MallDefinition mallDefinition = mallDefinitionService.getMallDefinitionByName(orderDetails.get(0).getSiteName());
 		Mall mall = getMall(mallDefinition);
 		orderInfo.setMall(mall);
